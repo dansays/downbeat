@@ -21,7 +21,8 @@ Discogs API, Todoist API, the dedup ledger, and link building.
 |-------|--------------|
 | `/build-rubric` | Pulls Discogs, analyzes it, writes `data/taste-rubric.md`. |
 | `/scan-jazz`    | Fetches venues, matches shows, creates Todoist tasks. |
-| `src/cli.ts`    | `discogs:dump`, `todoist:project`, `todoist:add`, `seen:check/add`, `links`. |
+| `/sync-playlist`| Builds a free Apple Music "listen ahead" song list for matched artists playing soon. |
+| `src/cli.ts`    | `discogs:dump`, `todoist:*`, `seen:*`, `links`, `lastfm:top`, `playlist:build`. |
 
 ## Setup
 
@@ -55,6 +56,29 @@ npm run downbeat -- discogs:dump
 npm run downbeat -- todoist:project --name "Events & Entertainment"
 npm run downbeat -- links --artist "John Coltrane"
 ```
+
+## "Listen ahead" song list (optional, free)
+
+Maintains `data/playlist.md` — a tap-to-add list of popular songs by the matched artists who
+have an upcoming LA show, so you can preview who's about to play nearby. Past shows are pruned
+automatically.
+
+> **Why a list instead of a real playlist:** writing directly to a streaming service costs
+> money — the Apple Music API needs the paid Apple Developer Program ($99/yr), and Spotify now
+> requires the app owner to have Spotify Premium (~$144/yr). So this stays free: **Last.fm**
+> supplies the popular songs (Spotify removed its own top-tracks endpoint in Feb 2026), and
+> each song is an **Apple Music search link** you tap to add to your library/playlist.
+
+One-time setup (free): get a Last.fm API key at <https://www.last.fm/api/account/create> and
+put it in `.env` as `LASTFM_API_KEY`.
+
+Then, anytime:
+
+```sh
+/sync-playlist     # in Claude Code — prunes past shows, adds ~5 songs per new upcoming artist
+```
+
+Open `data/playlist.md` and tap the song links to add them in Apple Music.
 
 ## Notes
 

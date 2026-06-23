@@ -14,6 +14,8 @@ export const PATHS = {
   venues: resolve(ROOT, "data/venues.md"),
   rubric: resolve(ROOT, "data/taste-rubric.md"),
   seen: resolve(ROOT, "data/seen-events.json"),
+  playlist: resolve(ROOT, "data/playlist.json"), // state for dedup/prune
+  playlistMd: resolve(ROOT, "data/playlist.md"), // human-readable listen-ahead list
 } as const;
 
 /** Read a required env var or throw a helpful error. */

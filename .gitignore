@@ -1,6 +1,8 @@
 node_modules/
 .env
 data/seen-events.json
+data/playlist.json
+data/playlist.md
 *.log
 .DS_Store
 .vscode/
