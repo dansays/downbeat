@@ -513,6 +513,7 @@ program
             artist: t.artist,
             billedArtist: t.billedArtist,
             title: t.matchedTitle || t.title,
+            reqTitle: t.title,
           });
         }
       }
@@ -594,8 +595,10 @@ program
           // Resolve this segment to a queueable item_key in the live session.
           let itemKey: string | null = null;
           if (seg.kind === "track") {
-            // item_keys are session-scoped, so re-resolve before queueing.
-            itemKey = (await searchTrack(browse, seg.artist, seg.title))?.itemKey ?? null;
+            // item_keys are session-scoped, so re-resolve before queueing. Use the original
+            // requested title (not the matched one) so the query matches what worked at resolve
+            // time — a matched title's "(feat. …)" suffix can otherwise throw off the search.
+            itemKey = (await searchTrack(browse, seg.artist, seg.reqTitle))?.itemKey ?? null;
           } else {
             // Poll until Roon has indexed the freshly written clip (~10-15s typical).
             for (let i = 0; i < 12 && !itemKey; i++) {

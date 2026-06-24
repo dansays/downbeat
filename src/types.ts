@@ -94,7 +94,8 @@ export type ShowSegment =
       itemKey: string;
       artist: string;
       billedArtist: string;
-      title: string;
+      title: string; // matched title, for display
+      reqTitle: string; // originally requested title, for stable re-resolution at queue time
     }
   | {
       kind: "clip";
