@@ -23,6 +23,7 @@ import {
   ELEVENLABS_VOICE_ID,
   ELEVENLABS_MODEL,
   ELEVENLABS_SPEED,
+  ELEVENLABS_STABILITY,
 } from "./config.ts";
 
 const execFileP = promisify(execFile);
@@ -422,8 +423,9 @@ program
   .option("--voice <id>", "ElevenLabs voice id", ELEVENLABS_VOICE_ID)
   .option("--model <id>", "ElevenLabs model id", ELEVENLABS_MODEL)
   .option("--speed <n>", "voice speed (0.7–1.2; <1 slower/moodier)", String(ELEVENLABS_SPEED))
+  .option("--stability <n>", "voice stability (0–1; lower = more expressive)", String(ELEVENLABS_STABILITY))
   .option("--album <name>", "ID3 album tag for the clips", ROON_PLAYLIST_NAME)
-  .action(async (opts: { voice: string; model: string; speed: string; album: string }) => {
+  .action(async (opts: { voice: string; model: string; speed: string; stability: string; album: string }) => {
     try {
       const raw = (await readStdin()).trim();
       if (!raw) throw new Error("No JSON provided on stdin.");
@@ -443,15 +445,16 @@ program
       }
 
       const speed = Number(opts.speed) || ELEVENLABS_SPEED;
+      const stability = Number(opts.stability) || ELEVENLABS_STABILITY;
       const clips: DjClip[] = [];
       let synthed = 0;
       let cachedCount = 0;
       for (const seg of segments) {
         const title = clipTitle(seg.slot, seg.artistKey);
-        const hash = clipHash(seg.text, opts.voice, opts.model, speed);
+        const hash = clipHash(seg.text, opts.voice, opts.model, speed, stability);
         // Raw audio is cached outside the watched folder so Roon never indexes duplicates.
         const rawPath = join(djClipCacheDir, `${hash}.mp3`);
-        const { cached } = await synthesize(seg.text, rawPath, { voiceId: opts.voice, modelId: opts.model, speed });
+        const { cached } = await synthesize(seg.text, rawPath, { voiceId: opts.voice, modelId: opts.model, speed, stability });
         cached ? cachedCount++ : synthed++;
 
         const outPath = join(djClipsDir, `${fsSafe(`${prefix}${title}`)}.mp3`);

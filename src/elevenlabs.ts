@@ -1,7 +1,13 @@
 import { createHash } from "node:crypto";
 import { mkdir, writeFile, access } from "node:fs/promises";
 import { dirname } from "node:path";
-import { requireEnv, ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL, ELEVENLABS_SPEED } from "./config.ts";
+import {
+  requireEnv,
+  ELEVENLABS_VOICE_ID,
+  ELEVENLABS_MODEL,
+  ELEVENLABS_SPEED,
+  ELEVENLABS_STABILITY,
+} from "./config.ts";
 
 /**
  * ElevenLabs text-to-speech for the DJ commentary. One concern per module (like lastfm.ts): turn a
@@ -13,14 +19,24 @@ const API = "https://api.elevenlabs.io/v1/text-to-speech";
 const OUTPUT_FORMAT = "mp3_44100_128"; // 44.1kHz/128kbps MP3 — Roon-friendly
 
 /** Stable cache key (and clip filename stem) for a piece of narration. */
-export function clipHash(text: string, voiceId: string, modelId: string, speed: number): string {
-  return createHash("sha1").update(`${voiceId}|${modelId}|${speed}|${text}`).digest("hex").slice(0, 16);
+export function clipHash(
+  text: string,
+  voiceId: string,
+  modelId: string,
+  speed: number,
+  stability: number,
+): string {
+  return createHash("sha1")
+    .update(`${voiceId}|${modelId}|${speed}|${stability}|${text}`)
+    .digest("hex")
+    .slice(0, 16);
 }
 
 export interface SynthOptions {
   voiceId?: string;
   modelId?: string;
   speed?: number;
+  stability?: number;
 }
 
 /**
@@ -44,6 +60,7 @@ export async function synthesize(
   const voiceId = opts.voiceId ?? ELEVENLABS_VOICE_ID;
   const modelId = opts.modelId ?? ELEVENLABS_MODEL;
   const speed = opts.speed ?? ELEVENLABS_SPEED;
+  const stability = opts.stability ?? ELEVENLABS_STABILITY;
 
   const res = await fetch(`${API}/${voiceId}?output_format=${OUTPUT_FORMAT}`, {
     method: "POST",
@@ -55,7 +72,7 @@ export async function synthesize(
     body: JSON.stringify({
       text,
       model_id: modelId,
-      voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
+      voice_settings: { stability, similarity_boost: 0.75, speed },
     }),
   });
 

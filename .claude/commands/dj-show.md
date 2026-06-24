@@ -50,15 +50,22 @@ Last.fm + the rubric.
    unresolved, swap the title and re-resolve. (`searchTrack` rejects wrong-titled matches, so
    unresolved usually means "not on Qobuz" — pick another canonical title.)
 
-5. **Write the Stephen Holloway script**, then synthesize it. Holloway is a warm, unhurried
-   late-night host: he says his name in the intro and signs off in the outro. Produce a JSON array
-   of `ScriptSegment` — `{ "slot":"intro" }`, one `{ "slot":"artist", "artistKey":"<billedArtist>" }`
-   per act (artistKey must equal the act's `billedArtist` so it interleaves correctly), and
-   `{ "slot":"outro" }`, each with a `text` field. Rules:
-   - **~45–110 words** per segment (intro/outro ~25–35s, artist intros ~20–35s). Conversational,
-     no emojis, no stage directions — only spoken words.
+5. **Write the Stephen Holloway script**, then synthesize it. Holloway is a warm late-night host
+   with personality — unhurried, a little dry wit, evocative after-hours imagery, the odd aside —
+   but never corny or over-written. He says his name in the intro and signs off in the outro.
+   Produce a JSON array of `ScriptSegment` — `{ "slot":"intro" }`, one
+   `{ "slot":"artist", "artistKey":"<billedArtist>" }` per act (artistKey must equal the act's
+   `billedArtist` so it interleaves correctly), and `{ "slot":"outro" }`, each with a `text` field.
+   Rules:
+   - **Run it like real radio with segues.** Each artist intro after the first **recaps the act we
+     just heard** — name them and remind the listener *where and when* they play (venue + date) —
+     then introduces the act coming up (also with its venue + date). The outro recaps the final act
+     the same way. The first artist intro has nothing to recap; flow straight from the show intro.
+   - **~60–110 words** per segment (a bit longer is fine now that intros do double duty). Spoken
+     words only — conversational, no emojis, no stage directions.
    - **Ground only** in `taste-rubric.md` + the per-act context you have (venue, `showDate`,
-     `whyItMatches`). **No invented facts** (no fake bios, dates, or accolades).
+     `whyItMatches`). **No invented facts** — no fake bios, dates, accolades, or anecdotes. The
+     personality is in the *voice and phrasing*, not in made-up specifics.
    - **Speak the billed name, credit the recording artist.** For substitutions, clarify on air
      (e.g. "Tomorrow at Sam First, Jaz Sawyer's quartet plays the music of Coltrane — so here's
      Coltrane himself…").

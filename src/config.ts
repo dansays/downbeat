@@ -79,6 +79,12 @@ export const ELEVENLABS_MODEL = process.env.ELEVENLABS_MODEL || "eleven_multilin
 export const ELEVENLABS_SPEED = Number(process.env.ELEVENLABS_SPEED) || 0.85;
 
 /**
+ * Voice stability (ElevenLabs voice_settings.stability, 0–1). Lower = more expressive/variable,
+ * higher = flatter/more consistent. Default 0.35 for an expressive late-night read.
+ */
+export const ELEVENLABS_STABILITY = Number(process.env.ELEVENLABS_STABILITY) || 0.35;
+
+/**
  * Identity Roon shows the user under Settings → Extensions when pairing. The user enables
  * "Downbeat DJ" there once; the auth token then persists in roonStateDir.
  */
