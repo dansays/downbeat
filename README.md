@@ -93,7 +93,9 @@ between songs — but **this first phase is music-only**. See the design in
 > community API exposes only *transport* actions (Play / Queue / Start Radio) on tracks — reached
 > via search, library, or even an existing playlist. It has no "Add to Playlist"/"Add to Library"
 > action, so it can't create or edit a saved playlist. Queueing to a zone is the way to assemble
-> an ordered show, and the only path that can later interleave local DJ clips.
+> an ordered show, and the only path that can later interleave local DJ clips. `dj:queue` loads
+> the queue and **pauses** by default, so you can press play or use Roon's **"Save Queue as
+> Playlist"** to keep it — which recovers a real saved playlist. Pass `--play` to start playback.
 
 One-time setup:
 
@@ -114,7 +116,7 @@ npm run downbeat -- roon:zones                                                  
 npm run downbeat -- roon:search --artist "Bill Evans" --title "Waltz for Debby" # pairing/search check
 npm run downbeat -- dj:resolve   < spec.json      # show spec → resolved Qobuz tracks
 npm run downbeat -- dj:build     < resolved.json  # → data/dj-show.json (running order)
-npm run downbeat -- dj:queue --zone "Living Room" # load the show into the zone's queue, in order
+npm run downbeat -- dj:queue --zone "Living Room" # load the queue in order, paused (--play to start)
 ```
 
 ## Notes

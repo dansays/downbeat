@@ -253,6 +253,19 @@ export interface Zone {
   name: string;
 }
 
+/** Send a transport control to a zone (play | pause | playpause | stop | previous | next). */
+export function controlZone(
+  transport: any,
+  zoneId: string,
+  control: "play" | "pause" | "playpause" | "stop" | "previous" | "next",
+): Promise<void> {
+  return new Promise((res, rej) => {
+    transport.control(zoneId, control, (err: string | false) =>
+      err ? rej(new Error(`Roon control "${control}" failed: ${err}`)) : res(),
+    );
+  });
+}
+
 /** List the Core's playback zones (display name + id) for the user to target. */
 export function listZones(transport: any): Promise<Zone[]> {
   return new Promise((res, rej) => {

@@ -6,7 +6,7 @@ import { resolveProjectId, createTask } from "./todoist.ts";
 import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
-import { withRoon, searchTrack, queueTrack, listZones, type Zone } from "./roon.ts";
+import { withRoon, searchTrack, queueTrack, controlZone, listZones, type Zone } from "./roon.ts";
 import { TODOIST_PROJECT, PATHS, ROON_PLAYLIST_NAME, ROON_ZONE } from "./config.ts";
 import type {
   TaskInput,
@@ -419,13 +419,15 @@ function resolveZone(zones: Zone[], requested: string): Zone {
 program
   .command("dj:queue")
   .description(
-    "Queue the show from data/dj-show.json into a Roon zone, in order: the first track plays now " +
-      "and the rest are appended. Re-resolves each track in the live session. " +
-      "(The Roon API can't build a saved playlist; this loads the zone's play queue.)",
+    "Queue the show from data/dj-show.json into a Roon zone, in order. By default it loads the " +
+      "queue and pauses (so you can Save Queue as a playlist in Roon); pass --play to start " +
+      "playback. Re-resolves each track in the live session. " +
+      "(The Roon API can't create a saved playlist directly; this loads the zone's play queue.)",
   )
   .option("--zone <zone>", "target zone name or id (overrides ROON_ZONE)", ROON_ZONE)
+  .option("--play", "start playback (default: load the queue and pause)")
   .option("--settle <ms>", "delay between adds, ms (keeps order stable)", "400")
-  .action(async (opts: { zone: string; settle: string }) => {
+  .action(async (opts: { zone: string; play?: boolean; settle: string }) => {
     try {
       const show = await loadDjShow();
       const trackSegs = show.segments.filter(
@@ -449,8 +451,11 @@ program
             continue;
           }
           try {
-            // First track replaces the queue and starts; the rest append in order.
+            // The first track uses "Play Now" — the only action that *replaces* the queue (so a
+            // stale queue doesn't precede the show). The rest append in order. To avoid playback,
+            // pause immediately after that first track, then keep appending (append won't resume).
             await queueTrack(browse, hit.itemKey, zone.zoneId, isFirst ? "playNow" : "queue");
+            if (isFirst && !opts.play) await controlZone(transport, zone.zoneId, "pause");
             added.push(`${seg.billedArtist} — ${seg.title}`);
             isFirst = false;
             if (settleMs) await sleep(settleMs);
@@ -458,6 +463,8 @@ program
             skipped.push(`${seg.billedArtist} — ${seg.title} (${err instanceof Error ? err.message : err})`);
           }
         }
+        // Safety net: ensure we're paused at the top if the user didn't ask to play.
+        if (added.length && !opts.play) await controlZone(transport, zone.zoneId, "pause");
         return { zone, added, skipped };
       });
 
@@ -467,7 +474,14 @@ program
         console.log(`\nSkipped ${skipped.length}:`);
         skipped.forEach((s) => console.log(`  - ${s}`));
       }
-      if (added.length) console.log(`\nThe show is playing/queued in "${zone.name}". Enjoy.`);
+      if (added.length) {
+        console.log(
+          opts.play
+            ? `\nThe show is playing in "${zone.name}". Enjoy.`
+            : `\nThe queue is loaded and paused in "${zone.name}". In Roon you can press play, or ` +
+                `use the queue's "Save Queue as Playlist" to keep it as a playlist.`,
+        );
+      }
     } catch (err) {
       fail(err);
     }

@@ -50,10 +50,13 @@ so the API cannot create or edit a saved playlist.** (It *can* open and play exi
 first track uses `Play Now` (replaces the queue and starts), the rest use `Queue` (append), so the
 show plays through in order. This needs a `zone_or_output_id` and the **transport** service (adding
 it changes the extension's requested services, so Roon prompts to re-enable "Downbeat DJ" once).
-Trade-off vs. the original vision: the show is *play-now in a chosen zone*, not a saved playlist you
-reopen later. `data/dj-show.json` remains the always-produced manifest. Track *resolution* via
-search works exactly as designed. Implemented commands: `roon:zones`, `dj:queue` (replaced
-`dj:playlist`).
+Trade-off vs. the original vision: the show is built as a zone *queue*, not directly as a saved
+playlist. But Roon's queue offers a **"Save Queue as Playlist"** action, so `dj:queue` loads the
+queue and **pauses** by default (first track via `Play Now` to replace any stale queue, then pause,
+then `Queue` the rest) — leaving a clean ordered queue the user can save as a real playlist, which
+recovers the original goal. `--play` starts playback instead. `data/dj-show.json` remains the
+always-produced manifest. Track *resolution* via search works as designed (ranked by artist
+primacy). Implemented commands: `roon:zones`, `dj:queue` (replaced `dj:playlist`).
 
 ### Two load-bearing technical facts (original analysis, kept for context)
 
