@@ -73,6 +73,12 @@ export const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "XFQFwy8OE
 export const ELEVENLABS_MODEL = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
 
 /**
+ * Playback speed for the DJ voice (ElevenLabs voice_settings.speed, 0.7–1.2; <1 is slower).
+ * Default 0.85 — a touch slow for a moody, late-night delivery.
+ */
+export const ELEVENLABS_SPEED = Number(process.env.ELEVENLABS_SPEED) || 0.85;
+
+/**
  * Identity Roon shows the user under Settings → Extensions when pairing. The user enables
  * "Downbeat DJ" there once; the auth token then persists in roonStateDir.
  */
