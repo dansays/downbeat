@@ -1,78 +1,84 @@
 ---
-description: Queue a curated jazz show of upcoming matched artists into a Roon zone (music-only; DJ commentary lands in Phase 2)
-allowed-tools: Bash(npm run downbeat *), Bash(npx tsx *), Read, Write
+description: Produce a late-night jazz radio show — curated tracks from upcoming matched artists with Stephen Holloway DJ commentary — and queue it into a Roon zone
+allowed-tools: Bash(npm run downbeat *), Bash(npx tsx *), Bash(jq *), Read, Write
 ---
 
-Queue a curated **Roon** show of real recordings from the jazz artists who matched the taste
-rubric and have an UPCOMING LA show. Built from `seen-events.json`, curated with Last.fm + the
-rubric, resolved against the Roon/Qobuz library, and loaded **in order into a Roon zone's play
-queue** (first track plays now, the rest follow).
+Produce a late-night jazz radio show: real recordings from the artists who matched the taste
+rubric and have an UPCOMING LA show, interleaved with short **Stephen Holloway** DJ commentary
+(voiced by ElevenLabs), loaded **in order into a Roon zone's play queue** (intro clip → first
+act's intro → its tracks → next act → … → outro). Built from `seen-events.json`, curated with
+Last.fm + the rubric.
 
-> **Why a queue, not a saved playlist:** a Phase-0 spike found Roon's community API exposes only
-> transport actions (Play/Queue) on tracks — it cannot create or edit a saved playlist. So the show
-> is loaded into a zone's play queue. To keep it, Roon's queue has a **"Save Queue as Playlist"**
-> action you can use after `dj:queue` (which loads the queue and pauses by default).
-
-> **This phase is music-only.** The DJ persona (Stephen Holloway) and ElevenLabs-voiced commentary
-> are Phase 2 — not generated here. Don't write or synthesize DJ patter.
+> **Why a queue, not a saved playlist:** Roon's community API only exposes transport actions on
+> tracks, so the show is loaded into a zone's play queue. `dj:queue` loads it paused; to keep it,
+> use Roon's **"Save Queue as Playlist"**.
 
 ## Prerequisites
-- Roon is running on the same network, with the **Downbeat DJ** extension enabled (Roon →
-  Settings → Extensions). The first run prints how to enable it if it isn't paired yet.
-- `.env` has `LASTFM_API_KEY` (track popularity). Optionally set `ROON_ZONE` to your preferred
-  zone (else pass `--zone`, or it auto-picks when the Core has a single zone). List zones with
-  `npm run downbeat -- roon:zones`.
+- Roon on the same network with the **Downbeat DJ** extension enabled (Roon → Settings →
+  Extensions). Set `ROON_ZONE` or pass `--zone` (list with `npm run downbeat -- roon:zones`).
+- `.env`: `LASTFM_API_KEY`, `ELEVENLABS_API_KEY`. `ROON_DJ_CLIPS_DIR` must point at a
+  Roon-watched Storage folder (a mounted share is fine). `ffmpeg` must be installed (tags clips).
 
 ## Steps
 
-1. Read `data/seen-events.json` (the ledger of matched shows) and `data/taste-rubric.md`. Keep only
-   shows with `date` >= today.
+1. Read `data/seen-events.json` and `data/taste-rubric.md`. Keep only shows with `date` >= today.
+   A full ledger is many shows — curate a tight show (aim ~4–6 acts), favoring the strongest
+   rubric matches that are likely to have catalog on Qobuz; drop the rest and report them.
 
-2. **Normalize each billed name to the artist whose catalog we'll actually play** — same rules as
-   `/sync-playlist`, but track *why* you remapped, because the Phase-2 DJ script needs to explain it:
-   - Strip ensemble suffixes: "The Amanda Castro Band" → "Amanda Castro"; "Yotam Silberstein
-     Trio" → "Yotam Silberstein". (No substitution — same artist.)
-   - **Tributes / "Music of X":** the billed act usually has no recordings on Qobuz, so play the
-     **honored** artist's originals: "Jaz Sawyer Quartet: Music of Coltrane" → play **John
-     Coltrane**. This is a *substitution* — record it (see step 4) so Stephen Holloway can clarify
-     in the lead-in (e.g. "tonight at Sam First, Jaz Sawyer's quartet plays the music of Coltrane —
-     here's Coltrane's own…").
-   - **Leader with a thin/absent Qobuz catalog:** if a quick check suggests the billed leader isn't
-     on Qobuz, fall back to the most relevant well-recorded artist on the bill (or the repertoire's
-     source) and record it as a substitution.
-   - Drop names that don't map to any recording artist and report them as skipped.
+2. **Normalize each billed name to the artist whose catalog we'll play**, tracking *why* (the DJ
+   needs it) — same rules as `/sync-playlist`:
+   - Strip ensemble suffixes ("Yotam Silberstein Trio" → "Yotam Silberstein"). No substitution.
+   - **Tributes / "Music of X"** and **leaders with no Qobuz catalog:** play the honored/source
+     artist's own recordings and record it as a *substitution* (e.g. "Jaz Sawyer Quartet: Music of
+     Coltrane" → play John Coltrane). Stephen Holloway will clarify it on air.
+   - Drop names that map to no recording artist; report them as skipped.
 
-3. **Curate ~2–4 canonical tracks per artist.** Run
-   `npm run downbeat -- lastfm:top --artist "<name>" --limit 8` for popularity, then pick the 2–4
-   best **using the rubric** (prefer loved styles/eras; drop Avoids). Choose **canonical
-   recordings** and name the title precisely — the resolver prefers an *artist-led* match but can't
-   tell pressings apart, so favor well-known studio versions and avoid titles that only exist as
-   live/alternate takes unless you mean them. When in doubt about which version exists, probe with
-   `npm run downbeat -- roon:search --artist "<a>" --title "<t>" --candidates` and read the ranked
-   list. Keep artists in chronological show order.
+3. **Curate ~2–4 canonical tracks per act.** Run `npm run downbeat -- lastfm:top --artist "<name>"
+   --limit 8` for popularity, pick the best by the rubric (loved styles/eras; drop Avoids), and
+   name titles precisely — prefer well-known studio versions. The resolver prefers an artist-led,
+   sole-credit match but can't pick pressings; if unsure which exists, probe
+   `npm run downbeat -- roon:search --artist "<a>" --title "<t>" --candidates`. Keep acts in
+   chronological show order.
 
-4. Write the show spec to a temp file (use the Write tool, not `echo`) as a JSON array of
-   `{ "artist": "<artist we play>", "billedArtist": "<as billed at the venue>", "venue": "<venue>",
-   "showDate": "YYYY-MM-DD", "whyItMatches": "<rationale; include any substitution, e.g. 'tribute —
-   billed Jaz Sawyer Quartet plays Music of Coltrane, so we play Coltrane'>", "tracks": ["<title>", ...] }`,
-   then resolve each track against the Roon/Qobuz library:
+4. Write the show spec to a temp file (Write tool, not `echo`) — a JSON array of
+   `{ "artist", "billedArtist", "venue", "showDate", "whyItMatches", "tracks":[...] }` (carry any
+   substitution in `whyItMatches`) — then resolve against Roon/Qobuz:
    ```
    npm run downbeat -- dj:resolve < /tmp/downbeat-dj-spec.json > /tmp/downbeat-dj-resolved.json
    ```
-   This prints `{ resolved: [...], unresolved: [...] }`. For each unresolved track, swap in another
-   canonical title and re-resolve; if the chosen `matchedArtist`/`matchedTitle` looks like the wrong
-   version, refine the title and re-resolve. Carry `billedArtist` through so the DJ can speak the
-   billed name while we credit the recording artist.
+   Check each `matchedTitle`/`matchedArtist`: if a track resolved to the wrong tune/version or is
+   unresolved, swap the title and re-resolve. (`searchTrack` rejects wrong-titled matches, so
+   unresolved usually means "not on Qobuz" — pick another canonical title.)
 
-5. Build the manifest from the resolved tracks, then load the queue:
+5. **Write the Stephen Holloway script**, then synthesize it. Holloway is a warm, unhurried
+   late-night host: he says his name in the intro and signs off in the outro. Produce a JSON array
+   of `ScriptSegment` — `{ "slot":"intro" }`, one `{ "slot":"artist", "artistKey":"<billedArtist>" }`
+   per act (artistKey must equal the act's `billedArtist` so it interleaves correctly), and
+   `{ "slot":"outro" }`, each with a `text` field. Rules:
+   - **~45–110 words** per segment (intro/outro ~25–35s, artist intros ~20–35s). Conversational,
+     no emojis, no stage directions — only spoken words.
+   - **Ground only** in `taste-rubric.md` + the per-act context you have (venue, `showDate`,
+     `whyItMatches`). **No invented facts** (no fake bios, dates, or accolades).
+   - **Speak the billed name, credit the recording artist.** For substitutions, clarify on air
+     (e.g. "Tomorrow at Sam First, Jaz Sawyer's quartet plays the music of Coltrane — so here's
+     Coltrane himself…").
+   - **Spell out TTS-fragile bits**: dates as words ("June twenty-fifth"), avoid odd symbols.
+   Write it to a temp file and synthesize (this clears prior clips, caches by text, tags each MP3):
    ```
-   npm run downbeat -- dj:build < <(jq '{tracks: .resolved}' /tmp/downbeat-dj-resolved.json)
+   npm run downbeat -- dj:tts < /tmp/downbeat-dj-script.json > /tmp/downbeat-dj-clips.json
+   ```
+
+6. Build the manifest (interleaves clips + tracks) and queue the show:
+   ```
+   jq -s '{tracks: .[0].resolved, clips: .[1].clips}' \
+     /tmp/downbeat-dj-resolved.json /tmp/downbeat-dj-clips.json > /tmp/downbeat-dj-build.json
+   npm run downbeat -- dj:build < /tmp/downbeat-dj-build.json
    npm run downbeat -- dj:queue            # add --zone "<name>" if ROON_ZONE isn't set
    ```
-   (`dj:build` writes `data/dj-show.json` and prints the running order; `dj:queue` re-resolves each
-   track live and loads them into the zone's queue in order, then **pauses** so the queue is ready
-   to play or to "Save Queue as Playlist" in Roon. Pass `--play` to start playback instead.)
+   `dj:build` writes `data/dj-show.json` and prints the running order; `dj:queue` re-resolves each
+   track live, polls until each freshly-written clip is indexed (~10-15s each), and loads the zone's
+   queue in order, then **pauses**. (Pass `--play` to start playback.)
 
-6. Report: the running order (with any billed→played substitutions called out), the zone, anything
-   `dj:queue` skipped, and the names you dropped in step 2. Remind the user they can press play, or
-   save the queue as a playlist in Roon.
+7. Report: the running order (clips + tracks, with any billed→played substitutions called out),
+   the zone, anything `dj:queue` skipped, and the acts you dropped in step 1. Remind the user they
+   can press play or "Save Queue as Playlist" in Roon.

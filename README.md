@@ -22,8 +22,8 @@ Discogs API, Todoist API, the dedup ledger, and link building.
 | `/build-rubric` | Pulls Discogs, analyzes it, writes `data/taste-rubric.md`. |
 | `/scan-jazz`    | Fetches venues, matches shows, creates Todoist tasks. |
 | `/sync-playlist`| Builds a free Apple Music "listen ahead" song list for matched artists playing soon. |
-| `/dj-show`      | Queues a curated **Roon** show of upcoming matched artists into a zone (music-only for now). |
-| `src/cli.ts`    | `discogs:dump`, `todoist:*`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `roon:search`, `roon:zones`, `dj:*`. |
+| `/dj-show`      | Builds a **Roon** radio show — curated tracks + Stephen Holloway DJ commentary — queued to a zone. |
+| `src/cli.ts`    | `discogs:dump`, `todoist:*`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `roon:*`, `dj:*`. |
 
 ## Setup
 
@@ -81,13 +81,12 @@ Then, anytime:
 
 Open `data/playlist.md` and tap the song links to add them in Apple Music.
 
-## DJ show — a curated Roon queue (optional)
+## DJ show — a late-night jazz radio hour in Roon (optional)
 
-`/dj-show` curates real recordings from the matched artists with an upcoming LA show and loads
-them, in order, into a **Roon zone's play queue** (first track plays now, the rest follow). It's
-the foundation for a future "jazz radio hour" where ElevenLabs-voiced DJ commentary is interleaved
-between songs — but **this first phase is music-only**. See the design in
-[`docs/dj-show.md`](docs/dj-show.md).
+`/dj-show` produces a late-night radio show from the matched artists with an upcoming LA show:
+curated recordings interleaved with short **Stephen Holloway** DJ commentary (voiced by
+ElevenLabs), loaded **in order into a Roon zone's play queue** — intro → each act's spoken intro →
+its tracks → … → outro. See the design in [`docs/dj-show.md`](docs/dj-show.md).
 
 > **Why a queue, not a saved playlist:** a Phase-0 spike against the live Core found Roon's
 > community API exposes only *transport* actions (Play / Queue / Start Radio) on tracks — reached
@@ -103,20 +102,23 @@ One-time setup:
 2. The first `/dj-show` (or `npm run downbeat -- roon:zones`) appears in Roon →
    **Settings → Extensions** as **Downbeat DJ** — enable it once. The pairing token is then
    cached under `data/.roon-state/`.
-3. Optionally set `ROON_ZONE` in `.env` to your preferred zone (else pass `--zone`, or it
-   auto-picks when there's a single zone).
+3. In `.env`: add `ELEVENLABS_API_KEY` (for the DJ voice) and set `ROON_DJ_CLIPS_DIR` to a
+   **Roon-watched Storage folder** (a mounted share is fine) — Downbeat writes the DJ clips there
+   and Roon indexes them (~10-15s) so they can be queued. Install `ffmpeg` (tags the clips).
+   Optionally set `ROON_ZONE` (else pass `--zone`, or it auto-picks a single zone).
 
 Then, anytime:
 
 ```sh
-/dj-show                 # in Claude Code — curates, resolves, and queues the show to a zone
+/dj-show                 # in Claude Code — curates, scripts + voices the DJ, queues the show
 
 # Or drive the CLI directly:
-npm run downbeat -- roon:zones                                                  # list zones
-npm run downbeat -- roon:search --artist "Bill Evans" --title "Waltz for Debby" # pairing/search check
-npm run downbeat -- dj:resolve   < spec.json      # show spec → resolved Qobuz tracks
-npm run downbeat -- dj:build     < resolved.json  # → data/dj-show.json (running order)
-npm run downbeat -- dj:queue --zone "Living Room" # load the queue in order, paused (--play to start)
+npm run downbeat -- roon:zones                       # list zones
+npm run downbeat -- dj:resolve < spec.json   > resolved.json  # show spec → resolved Qobuz tracks
+npm run downbeat -- dj:tts     < script.json > clips.json     # Holloway script → tagged MP3 clips
+# combine: jq -s '{tracks:.[0].resolved, clips:.[1].clips}' resolved.json clips.json > build.json
+npm run downbeat -- dj:build   < build.json          # interleave clips+tracks → data/dj-show.json
+npm run downbeat -- dj:queue --zone "Living Room"    # load the queue in order, paused (--play to start)
 ```
 
 ## Notes

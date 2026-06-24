@@ -58,6 +58,18 @@ recovers the original goal. `--play` starts playback instead. `data/dj-show.json
 always-produced manifest. Track *resolution* via search works as designed (ranked by artist
 primacy). Implemented commands: `roon:zones`, `dj:queue` (replaced `dj:playlist`).
 
+### Phase 2 findings (clips) — local commentary works
+
+Fact 2 (local-clip indexing) spiked clean on the live setup: a clip written to the Roon-watched
+share (a mount on a separate machine from the Core) was **auto-indexed in ~11 seconds — no manual
+rescan**. Roon titles an untagged MP3 by its filename (artist "Various Artists"), so clips are
+**tagged with ffmpeg** (`artist=Downbeat DJ`, a per-segment `title`) to group and find them. The
+clip path: `dj:tts` synthesizes (ElevenLabs, cached) → caches raw audio outside the watched folder
+→ ffmpeg-tags a copy into the watched folder; `dj:queue` polls `searchLocalClip` until the clip
+indexes, then queues it inline via the same transport actions as tracks. The first segment uses
+`Play Now` (clears the queue) and pauses; the rest `Queue`. Prior clips are cleared each run.
+Verified end-to-end: an 18-segment show (intro / per-act intros / tracks / outro) queued in order.
+
 ### Two load-bearing technical facts (original analysis, kept for context)
 
 1. **Playlist assembly via the community API is the main unknown — spike it first.** Roon's community API has no playlist *reorder* call, so order must be built by adding tracks to the playlist **one at a time, in sequence**. The mechanism is the Browse "Add to Playlist" action surfaced when you drill into a track's `item_key` (with a sub-action to create a new playlist or append to an existing one). This must be validated: confirm the Browse API actually exposes Add-to-Playlist, whether it can target a new vs. existing playlist by name, whether sequential adds preserve order (may need to await each action / add a short settle delay), and whether it works **without** a zone (adding to a playlist is not playback, so it likely needs no `zone_or_output_id` — confirm). If create/append isn't viable through the API, fall back to emitting `data/dj-show.json` + clips and assembling the playlist manually.

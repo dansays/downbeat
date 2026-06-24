@@ -265,6 +265,31 @@ export async function searchTrack(
   };
 }
 
+/**
+ * Find a DJ clip in the Roon library by its title. Clips are tagged with a shared artist
+ * (DJ_CLIP_ARTIST) and a per-segment title, so we search that artist and match the title. Returns
+ * the item_key, or null if Roon hasn't indexed the clip yet (callers poll — indexing takes ~10-15s).
+ */
+export async function searchLocalClip(
+  browse: any,
+  clipArtist: string,
+  title: string,
+): Promise<string | null> {
+  await browseAsync(browse, { input: clipArtist, pop_all: true });
+  const topItems = await loadItems(browse);
+  const tracksCategory = findItem(topItems, "Tracks");
+  if (!tracksCategory?.item_key) return null;
+  await browseAsync(browse, { item_key: tracksCategory.item_key });
+  const trackItems = await loadItems(browse);
+
+  const wantTitle = norm(title);
+  const wantArtist = norm(clipArtist);
+  const match = trackItems.find(
+    (it) => norm(it.title) === wantTitle && norm(it.subtitle ?? "").includes(wantArtist),
+  );
+  return match?.item_key ?? null;
+}
+
 export interface Zone {
   zoneId: string;
   name: string;

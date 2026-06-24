@@ -5,6 +5,7 @@ data/playlist.json
 data/playlist.md
 data/dj-show.json
 data/dj-clips/
+data/.dj-clip-cache/
 data/.roon-state/
 *.log
 .DS_Store

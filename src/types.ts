@@ -66,6 +66,25 @@ export interface ResolvedTrack {
 }
 
 /**
+ * A DJ commentary segment written by Claude, fed to `dj:tts`. `slot` is the show position;
+ * `artistKey` (the billed name) ties an "artist" intro to that act so `dj:build` can interleave it.
+ */
+export interface ScriptSegment {
+  slot: "intro" | "artist" | "outro";
+  text: string; // what Stephen Holloway says
+  artistKey?: string; // billedArtist this intro precedes (for slot:"artist")
+}
+
+/** A synthesized DJ clip produced by `dj:tts` (MP3 in the Roon-watched clips dir). */
+export interface DjClip {
+  slot: "intro" | "artist" | "outro";
+  artistKey?: string;
+  title: string; // searchable title Roon indexes the clip under
+  path: string; // local file path of the MP3
+  hash: string; // cache key (text+voice+model)
+}
+
+/**
  * One element of the assembled show, in play order. The `clip` variant is declared for the
  * forthcoming DJ-commentary phase (Phase 2); the music-only pipeline emits only `track` segments.
  */

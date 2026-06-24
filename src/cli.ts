@@ -6,8 +6,25 @@ import { resolveProjectId, createTask } from "./todoist.ts";
 import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
-import { withRoon, searchTrack, queueTrack, controlZone, listZones, type Zone } from "./roon.ts";
-import { TODOIST_PROJECT, PATHS, ROON_PLAYLIST_NAME, ROON_ZONE } from "./config.ts";
+import { withRoon, searchTrack, queueTrack, controlZone, listZones, searchLocalClip, type Zone } from "./roon.ts";
+import { synthesize, clipHash } from "./elevenlabs.ts";
+import { join } from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { readdir, unlink, mkdir } from "node:fs/promises";
+import {
+  TODOIST_PROJECT,
+  PATHS,
+  ROON_PLAYLIST_NAME,
+  ROON_ZONE,
+  djClipsDir,
+  djClipCacheDir,
+  DJ_CLIP_ARTIST,
+  ELEVENLABS_VOICE_ID,
+  ELEVENLABS_MODEL,
+} from "./config.ts";
+
+const execFileP = promisify(execFile);
 import type {
   TaskInput,
   SyncArtist,
@@ -16,6 +33,8 @@ import type {
   ResolvedTrack,
   ShowSegment,
   DjShow,
+  ScriptSegment,
+  DjClip,
 } from "./types.ts";
 
 const program = new Command();
@@ -358,27 +377,146 @@ program
     }
   });
 
+/** Roon title (and filename label) for a DJ clip, by show position. */
+function clipTitle(slot: ScriptSegment["slot"], artistKey?: string): string {
+  if (slot === "intro") return "Intro";
+  if (slot === "outro") return "Outro";
+  return artistKey ?? "Interlude";
+}
+
+/** Make a label safe for a filename on the share. */
+function fsSafe(name: string): string {
+  return name.replace(/[/\\:*?"<>|]+/g, "_").trim();
+}
+
+/** Copy raw audio into the watched folder with ID3 tags so Roon indexes it findably. */
+async function tagClip(
+  src: string,
+  out: string,
+  tags: { title: string; artist: string; album: string },
+): Promise<void> {
+  try {
+    await execFileP("ffmpeg", [
+      "-y", "-loglevel", "error", "-i", src, "-c", "copy",
+      "-metadata", `title=${tags.title}`,
+      "-metadata", `artist=${tags.artist}`,
+      "-metadata", `album=${tags.album}`,
+      out,
+    ]);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error("ffmpeg not found — install it to tag DJ clips (brew install ffmpeg).");
+    }
+    throw err;
+  }
+}
+
+program
+  .command("dj:tts")
+  .description(
+    "Synthesize DJ commentary. Reads a JSON array of {slot, text, artistKey?} on stdin, renders " +
+      "each line (cached by text+voice+model) and writes a tagged MP3 into the Roon-watched clips " +
+      "dir, then prints {clips:[...]}. Prior clips are cleared first.",
+  )
+  .option("--voice <id>", "ElevenLabs voice id", ELEVENLABS_VOICE_ID)
+  .option("--model <id>", "ElevenLabs model id", ELEVENLABS_MODEL)
+  .option("--album <name>", "ID3 album tag for the clips", ROON_PLAYLIST_NAME)
+  .action(async (opts: { voice: string; model: string; album: string }) => {
+    try {
+      const raw = (await readStdin()).trim();
+      if (!raw) throw new Error("No JSON provided on stdin.");
+      const segments = JSON.parse(raw) as ScriptSegment[];
+
+      await mkdir(djClipsDir, { recursive: true });
+      await mkdir(djClipCacheDir, { recursive: true });
+
+      // Clear prior DJ clips so the library doesn't accumulate stale commentary.
+      const prefix = `${DJ_CLIP_ARTIST} - `;
+      try {
+        for (const f of await readdir(djClipsDir)) {
+          if (f.startsWith(prefix) && f.endsWith(".mp3")) await unlink(join(djClipsDir, f));
+        }
+      } catch {
+        // best-effort cleanup
+      }
+
+      const clips: DjClip[] = [];
+      let synthed = 0;
+      let cachedCount = 0;
+      for (const seg of segments) {
+        const title = clipTitle(seg.slot, seg.artistKey);
+        const hash = clipHash(seg.text, opts.voice, opts.model);
+        // Raw audio is cached outside the watched folder so Roon never indexes duplicates.
+        const rawPath = join(djClipCacheDir, `${hash}.mp3`);
+        const { cached } = await synthesize(seg.text, rawPath, { voiceId: opts.voice, modelId: opts.model });
+        cached ? cachedCount++ : synthed++;
+
+        const outPath = join(djClipsDir, `${fsSafe(`${prefix}${title}`)}.mp3`);
+        await tagClip(rawPath, outPath, { title, artist: DJ_CLIP_ARTIST, album: opts.album });
+        clips.push({ slot: seg.slot, artistKey: seg.artistKey, title, path: outPath, hash });
+      }
+
+      process.stdout.write(JSON.stringify({ clips }, null, 2) + "\n");
+      console.error(`Synthesized ${synthed} clip(s), ${cachedCount} from cache → ${djClipsDir}`);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
 program
   .command("dj:build")
   .description(
-    "Assemble the show manifest. Reads {tracks:[ResolvedTrack,...]} on stdin, writes the ordered " +
-      "running order to data/dj-show.json, and prints it. (DJ clips are interleaved here in Phase 2.)",
+    "Assemble the show manifest. Reads {tracks:[ResolvedTrack,...], clips?:[DjClip,...]} on stdin, " +
+      "interleaves [intro][artist clip][tracks…]…[outro] in order, writes data/dj-show.json, and " +
+      "prints the running order. Clips are optional — omit them for a music-only show.",
   )
-  .option("--name <name>", "Roon playlist name to record in the manifest", ROON_PLAYLIST_NAME)
+  .option("--name <name>", "show name recorded on the manifest", ROON_PLAYLIST_NAME)
   .action(async (opts: { name: string }) => {
     try {
       const raw = (await readStdin()).trim();
       if (!raw) throw new Error("No JSON provided on stdin.");
-      const parsed = JSON.parse(raw) as { tracks: ResolvedTrack[] };
+      const parsed = JSON.parse(raw) as { tracks: ResolvedTrack[]; clips?: DjClip[] };
       const tracks = parsed.tracks ?? [];
+      const clips = parsed.clips ?? [];
 
-      const segments: ShowSegment[] = tracks.map((t) => ({
-        kind: "track",
-        itemKey: t.itemKey,
-        artist: t.artist,
-        billedArtist: t.billedArtist,
-        title: t.matchedTitle || t.title,
-      }));
+      const clipSeg = (c: DjClip): Extract<ShowSegment, { kind: "clip" }> => ({
+        kind: "clip",
+        slot: c.slot,
+        title: c.title,
+        path: c.path,
+      });
+      const intro = clips.find((c) => c.slot === "intro");
+      const outro = clips.find((c) => c.slot === "outro");
+      const artistClip = (billed: string) =>
+        clips.find((c) => c.slot === "artist" && c.artistKey === billed);
+
+      // Group tracks by billed act, preserving first-seen order.
+      const order: string[] = [];
+      const byArtist = new Map<string, ResolvedTrack[]>();
+      for (const t of tracks) {
+        if (!byArtist.has(t.billedArtist)) {
+          byArtist.set(t.billedArtist, []);
+          order.push(t.billedArtist);
+        }
+        byArtist.get(t.billedArtist)!.push(t);
+      }
+
+      const segments: ShowSegment[] = [];
+      if (intro) segments.push(clipSeg(intro));
+      for (const billed of order) {
+        const clip = artistClip(billed);
+        if (clip) segments.push(clipSeg(clip));
+        for (const t of byArtist.get(billed)!) {
+          segments.push({
+            kind: "track",
+            itemKey: t.itemKey,
+            artist: t.artist,
+            billedArtist: t.billedArtist,
+            title: t.matchedTitle || t.title,
+          });
+        }
+      }
+      if (outro) segments.push(clipSeg(outro));
 
       const show: DjShow = {
         generatedAt: new Date().toISOString(),
@@ -387,10 +525,18 @@ program
       };
       await saveDjShow(show);
 
-      console.log(`Built manifest with ${segments.length} track(s) → data/dj-show.json`);
-      console.log(`Playlist: ${show.playlistName}`);
+      const trackCount = segments.filter((s) => s.kind === "track").length;
+      const clipCount = segments.filter((s) => s.kind === "clip").length;
+      console.log(
+        `Built manifest: ${trackCount} track(s), ${clipCount} DJ clip(s) → data/dj-show.json`,
+      );
+      console.log(`Show: ${show.playlistName}`);
       segments.forEach((seg, i) => {
-        if (seg.kind === "track") console.log(`  ${i + 1}. ${seg.billedArtist} — ${seg.title}`);
+        const line =
+          seg.kind === "track"
+            ? `${seg.billedArtist} — ${seg.title}`
+            : `[DJ: ${seg.title}]`;
+        console.log(`  ${i + 1}. ${line}`);
       });
     } catch (err) {
       fail(err);
@@ -430,11 +576,8 @@ program
   .action(async (opts: { zone: string; play?: boolean; settle: string }) => {
     try {
       const show = await loadDjShow();
-      const trackSegs = show.segments.filter(
-        (s): s is Extract<ShowSegment, { kind: "track" }> => s.kind === "track",
-      );
-      if (trackSegs.length === 0) {
-        throw new Error("No tracks in data/dj-show.json. Run dj:build first.");
+      if (show.segments.length === 0) {
+        throw new Error("No segments in data/dj-show.json. Run dj:build first.");
       }
       const settleMs = Number(opts.settle) || 0;
 
@@ -443,24 +586,39 @@ program
         const added: string[] = [];
         const skipped: string[] = [];
         let isFirst = true;
-        for (const seg of trackSegs) {
-          // item_keys are session-scoped, so re-resolve in this live session before queueing.
-          const hit = await searchTrack(browse, seg.artist, seg.title);
-          if (!hit) {
-            skipped.push(`${seg.billedArtist} — ${seg.title} (not found)`);
+
+        for (const seg of show.segments) {
+          const label =
+            seg.kind === "track" ? `${seg.billedArtist} — ${seg.title}` : `[DJ: ${seg.title}]`;
+
+          // Resolve this segment to a queueable item_key in the live session.
+          let itemKey: string | null = null;
+          if (seg.kind === "track") {
+            // item_keys are session-scoped, so re-resolve before queueing.
+            itemKey = (await searchTrack(browse, seg.artist, seg.title))?.itemKey ?? null;
+          } else {
+            // Poll until Roon has indexed the freshly written clip (~10-15s typical).
+            for (let i = 0; i < 12 && !itemKey; i++) {
+              itemKey = await searchLocalClip(browse, DJ_CLIP_ARTIST, seg.title);
+              if (!itemKey) await sleep(8000);
+            }
+          }
+          if (!itemKey) {
+            skipped.push(`${label} (${seg.kind === "clip" ? "clip not indexed" : "not found"})`);
             continue;
           }
+
           try {
-            // The first track uses "Play Now" — the only action that *replaces* the queue (so a
+            // The first item uses "Play Now" — the only action that *replaces* the queue (so a
             // stale queue doesn't precede the show). The rest append in order. To avoid playback,
-            // pause immediately after that first track, then keep appending (append won't resume).
-            await queueTrack(browse, hit.itemKey, zone.zoneId, isFirst ? "playNow" : "queue");
+            // pause immediately after that first item, then keep appending (append won't resume).
+            await queueTrack(browse, itemKey, zone.zoneId, isFirst ? "playNow" : "queue");
             if (isFirst && !opts.play) await controlZone(transport, zone.zoneId, "pause");
-            added.push(`${seg.billedArtist} — ${seg.title}`);
+            added.push(label);
             isFirst = false;
             if (settleMs) await sleep(settleMs);
           } catch (err) {
-            skipped.push(`${seg.billedArtist} — ${seg.title} (${err instanceof Error ? err.message : err})`);
+            skipped.push(`${label} (${err instanceof Error ? err.message : err})`);
           }
         }
         // Safety net: ensure we're paused at the top if the user didn't ask to play.
@@ -468,7 +626,7 @@ program
         return { zone, added, skipped };
       });
 
-      console.log(`Zone "${zone.name}": queued ${added.length} track(s) in order.`);
+      console.log(`Zone "${zone.name}": queued ${added.length} segment(s) in order.`);
       added.forEach((a, i) => console.log(`  ${i + 1}. ${a}`));
       if (skipped.length) {
         console.log(`\nSkipped ${skipped.length}:`);
