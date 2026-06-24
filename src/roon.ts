@@ -169,10 +169,24 @@ function norm(s: string): string {
 // asked for them, so the plain studio recording wins over live/remaster/alternate versions.
 const QUALIFIER = /\b(live|take|alternate|reprise|remaster|remastered|version|mix|edit|outtake|interlude|suite|demo|mono|stereo|instrumental|karaoke|radio)\b/;
 
+/** True if the candidate title is plausibly the wanted title (substring either way, or ≥60% of the
+ *  wanted words present). Guards against artist-led but wrong-tune matches ("My Favorite Things"
+ *  must not resolve to "Selflesness"). */
+function titleMatches(nT: string, nWant: string): boolean {
+  if (!nWant) return true;
+  if (nT.includes(nWant) || nWant.includes(nT)) return true;
+  const wantTokens = nWant.split(" ").filter(Boolean);
+  if (wantTokens.length === 0) return true;
+  const have = new Set(nT.split(" ").filter(Boolean));
+  const overlap = wantTokens.filter((w) => have.has(w)).length / wantTokens.length;
+  return overlap >= 0.6;
+}
+
 /**
  * Score a track result against the wanted artist/title. Higher is better. Rewards the wanted artist
- * being the *lead* credit (not a guest), an exact title, and penalizes alternate-take qualifiers.
- * Returns -1 if the wanted artist isn't credited at all (not a real candidate).
+ * being the *lead* credit (and the *sole* credit even more — favors a canonical recording over a
+ * co-credited cover), and an exact title; penalizes alternate-take qualifiers. Returns -1 (reject)
+ * when the artist isn't credited OR the title doesn't actually match the request.
  */
 function scoreTrack(item: any, artist: string, title: string): number {
   const nA = norm(artist);
@@ -180,16 +194,19 @@ function scoreTrack(item: any, artist: string, title: string): number {
   const nSub = norm(subRaw);
   if (!nSub.includes(nA)) return -1; // artist not credited — reject
 
+  const nT = norm(item.title);
+  const nWant = norm(title);
+  if (!titleMatches(nT, nWant)) return -1; // wrong tune — reject
+
   let score = 0;
   // Artist primacy: is the wanted artist the first credited name (their own recording), vs a guest?
   const firstCredit = norm(subRaw.split(/[,/&]/)[0] ?? "");
   if (firstCredit === nA) score += 100; // exact lead (e.g. "Bill Evans")
   else if (firstCredit.startsWith(nA)) score += 80; // lead is the artist's group ("Bill Evans Trio")
   else score += 30; // credited but a guest (e.g. "Tony Bennett, Bill Evans, …")
+  if (nSub === nA) score += 25; // sole credit — most likely the artist's own canonical recording
 
   // Title closeness.
-  const nT = norm(item.title);
-  const nWant = norm(title);
   if (nT === nWant) score += 40;
   else if (nT.startsWith(nWant)) score += 15;
   else if (nT.includes(nWant)) score += 5;
@@ -235,8 +252,8 @@ export async function searchTrack(
 
   const ranked = rankTracks(trackItems, artist, title);
   if (onCandidates) onCandidates(ranked);
-  // Best artist-credited match; if none credit the artist, fall back to Roon's top track hit.
-  const best = ranked[0]?.item ?? trackItems[0];
+  // Require a genuine artist+title match; better to report unresolved than queue the wrong tune.
+  const best = ranked[0]?.item;
   if (!best?.item_key) return null;
 
   return {
