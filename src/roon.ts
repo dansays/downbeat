@@ -157,17 +157,70 @@ export interface TrackHit {
   matchedArtist: string;
   matchedTitle: string;
   source?: string;
+  score?: number; // ranking score of the chosen candidate (debug/visibility)
+}
+
+/** Normalize for comparison: lowercase, collapse punctuation/whitespace. */
+function norm(s: string): string {
+  return String(s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+// Title qualifiers that mark an alternate/non-canonical take. Penalized unless the request itself
+// asked for them, so the plain studio recording wins over live/remaster/alternate versions.
+const QUALIFIER = /\b(live|take|alternate|reprise|remaster|remastered|version|mix|edit|outtake|interlude|suite|demo|mono|stereo|instrumental|karaoke|radio)\b/;
+
+/**
+ * Score a track result against the wanted artist/title. Higher is better. Rewards the wanted artist
+ * being the *lead* credit (not a guest), an exact title, and penalizes alternate-take qualifiers.
+ * Returns -1 if the wanted artist isn't credited at all (not a real candidate).
+ */
+function scoreTrack(item: any, artist: string, title: string): number {
+  const nA = norm(artist);
+  const subRaw = String(item.subtitle ?? "");
+  const nSub = norm(subRaw);
+  if (!nSub.includes(nA)) return -1; // artist not credited — reject
+
+  let score = 0;
+  // Artist primacy: is the wanted artist the first credited name (their own recording), vs a guest?
+  const firstCredit = norm(subRaw.split(/[,/&]/)[0] ?? "");
+  if (firstCredit === nA) score += 100; // exact lead (e.g. "Bill Evans")
+  else if (firstCredit.startsWith(nA)) score += 80; // lead is the artist's group ("Bill Evans Trio")
+  else score += 30; // credited but a guest (e.g. "Tony Bennett, Bill Evans, …")
+
+  // Title closeness.
+  const nT = norm(item.title);
+  const nWant = norm(title);
+  if (nT === nWant) score += 40;
+  else if (nT.startsWith(nWant)) score += 15;
+  else if (nT.includes(nWant)) score += 5;
+
+  // Penalize alternate-take qualifiers unless the request asked for them.
+  if (nT !== nWant && QUALIFIER.test(nT) && !QUALIFIER.test(nWant)) score -= 20;
+
+  // Mild preference for the tightest title (fewer extra words).
+  score -= Math.max(0, nT.length - nWant.length) * 0.05;
+  return score;
+}
+
+/** Rank track results best-first; ties keep Roon's original order. */
+export function rankTracks(items: any[], artist: string, title: string): Array<{ item: any; score: number }> {
+  return items
+    .map((item, i) => ({ item, score: scoreTrack(item, artist, title), i }))
+    .filter((c) => c.score >= 0)
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .map(({ item, score }) => ({ item, score }));
 }
 
 /**
- * Search the Core for a track and return the first hit matching the artist. Leaves the browse
- * session positioned on the chosen track's level, so `addToPlaylist` can act on the returned
- * item_key within the same session.
+ * Search the Core for a track and return the best-scoring artist match. Leaves the browse session
+ * positioned on the chosen track's level, so `queueTrack` can act on the returned item_key within
+ * the same session. `onCandidates` (optional) receives the ranked list for debugging/visibility.
  */
 export async function searchTrack(
   browse: any,
   artist: string,
   title: string,
+  onCandidates?: (ranked: Array<{ item: any; score: number }>) => void,
 ): Promise<TrackHit | null> {
   // Fresh search from the root of the hierarchy.
   await browseAsync(browse, { input: `${artist} ${title}`, pop_all: true });
@@ -180,19 +233,18 @@ export async function searchTrack(
   const trackItems = await loadItems(browse);
   if (trackItems.length === 0) return null;
 
-  // Prefer a track whose subtitle (the artist line) matches; else take the first hit. With Qobuz
-  // as the only source, the first hit is reliably Qobuz — but we still surface the source.
-  const wantArtist = artist.toLowerCase();
-  const match =
-    trackItems.find((it) => String(it.subtitle ?? "").toLowerCase().includes(wantArtist)) ??
-    trackItems[0];
-  if (!match?.item_key) return null;
+  const ranked = rankTracks(trackItems, artist, title);
+  if (onCandidates) onCandidates(ranked);
+  // Best artist-credited match; if none credit the artist, fall back to Roon's top track hit.
+  const best = ranked[0]?.item ?? trackItems[0];
+  if (!best?.item_key) return null;
 
   return {
-    itemKey: match.item_key,
-    matchedTitle: String(match.title ?? title),
-    matchedArtist: String(match.subtitle ?? artist),
-    source: typeof match.hint === "string" ? match.hint : undefined,
+    itemKey: best.item_key,
+    matchedTitle: String(best.title ?? title),
+    matchedArtist: String(best.subtitle ?? artist),
+    source: typeof best.hint === "string" ? best.hint : undefined,
+    score: ranked[0]?.score,
   };
 }
 

@@ -276,9 +276,18 @@ program
   .description("Resolve one track to a Roon/Qobuz item (pairing + search spike, and a debug tool).")
   .requiredOption("--artist <artist>")
   .requiredOption("--title <title>")
-  .action(async (opts: { artist: string; title: string }) => {
+  .option("--candidates", "also print the top ranked candidates considered")
+  .action(async (opts: { artist: string; title: string; candidates?: boolean }) => {
     try {
-      const hit = await withRoon((ctx) => searchTrack(ctx.browse, opts.artist, opts.title));
+      const hit = await withRoon((ctx) =>
+        searchTrack(ctx.browse, opts.artist, opts.title, (ranked) => {
+          if (!opts.candidates) return;
+          console.error(`Top candidates for "${opts.artist} — ${opts.title}":`);
+          for (const c of ranked.slice(0, 6)) {
+            console.error(`  [${c.score.toFixed(1)}] ${c.item.title}  —  ${c.item.subtitle ?? ""}`);
+          }
+        }),
+      );
       if (!hit) {
         console.log(`not found: ${opts.artist} — ${opts.title}`);
         return;
