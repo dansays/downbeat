@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { PATHS } from "./config.ts";
-import type { SeenEvent, PlaylistState } from "./types.ts";
+import type { SeenEvent, PlaylistState, DjShow } from "./types.ts";
 
 /** Stable dedup key for an event. */
 export function eventKey(venue: string, date: string, artist: string): string {
@@ -57,4 +57,20 @@ export async function loadPlaylist(): Promise<PlaylistState> {
 
 export async function savePlaylist(state: PlaylistState): Promise<void> {
   await writeFile(PATHS.playlist, JSON.stringify(state, null, 2) + "\n", "utf8");
+}
+
+/** Load the DJ-show manifest, tolerating a missing or empty file. */
+export async function loadDjShow(): Promise<DjShow> {
+  try {
+    const raw = (await readFile(PATHS.djShow, "utf8")).trim();
+    if (!raw) return { generatedAt: "", segments: [] };
+    return JSON.parse(raw) as DjShow;
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return { generatedAt: "", segments: [] };
+    throw err;
+  }
+}
+
+export async function saveDjShow(show: DjShow): Promise<void> {
+  await writeFile(PATHS.djShow, JSON.stringify(show, null, 2) + "\n", "utf8");
 }

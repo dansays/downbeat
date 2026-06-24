@@ -3,6 +3,9 @@ node_modules/
 data/seen-events.json
 data/playlist.json
 data/playlist.md
+data/dj-show.json
+data/dj-clips/
+data/.roon-state/
 *.log
 .DS_Store
 .vscode/

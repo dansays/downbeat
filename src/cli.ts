@@ -3,11 +3,20 @@ import { Command } from "commander";
 import { writeFile } from "node:fs/promises";
 import { fetchCollection } from "./discogs.ts";
 import { resolveProjectId, createTask } from "./todoist.ts";
-import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist } from "./store.ts";
+import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
-import { TODOIST_PROJECT, PATHS } from "./config.ts";
-import type { TaskInput, SyncArtist, PlaylistTrack } from "./types.ts";
+import { withRoon, searchTrack, addToPlaylist } from "./roon.ts";
+import { TODOIST_PROJECT, PATHS, ROON_PLAYLIST_NAME } from "./config.ts";
+import type {
+  TaskInput,
+  SyncArtist,
+  PlaylistTrack,
+  ShowSpecArtist,
+  ResolvedTrack,
+  ShowSegment,
+  DjShow,
+} from "./types.ts";
 
 const program = new Command();
 program
@@ -252,6 +261,168 @@ program
       );
       if (unresolved.length) {
         console.log(`No songs found for: ${unresolved.join(", ")}`);
+      }
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+// --- /dj-show (Roon) -------------------------------------------------------
+
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+
+program
+  .command("roon:search")
+  .description("Resolve one track to a Roon/Qobuz item (pairing + search spike, and a debug tool).")
+  .requiredOption("--artist <artist>")
+  .requiredOption("--title <title>")
+  .action(async (opts: { artist: string; title: string }) => {
+    try {
+      const hit = await withRoon((ctx) => searchTrack(ctx.browse, opts.artist, opts.title));
+      if (!hit) {
+        console.log(`not found: ${opts.artist} — ${opts.title}`);
+        return;
+      }
+      console.log(JSON.stringify(hit, null, 2));
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+program
+  .command("dj:resolve")
+  .description(
+    "Resolve a show spec to Qobuz tracks. Reads a JSON array of " +
+      "{artist, billedArtist, venue, showDate, tracks:[title,...]} on stdin and prints " +
+      "{resolved:[...], unresolved:[...]}. One Roon session resolves all tracks.",
+  )
+  .action(async () => {
+    try {
+      const raw = (await readStdin()).trim();
+      if (!raw) throw new Error("No JSON provided on stdin.");
+      const spec = JSON.parse(raw) as ShowSpecArtist[];
+
+      const { resolved, unresolved } = await withRoon(async ({ browse }) => {
+        const resolved: ResolvedTrack[] = [];
+        const unresolved: string[] = [];
+        for (const act of spec) {
+          for (const title of act.tracks) {
+            const hit = await searchTrack(browse, act.artist, title);
+            if (hit) {
+              resolved.push({
+                artist: act.artist,
+                billedArtist: act.billedArtist,
+                title,
+                itemKey: hit.itemKey,
+                matchedArtist: hit.matchedArtist,
+                matchedTitle: hit.matchedTitle,
+                source: hit.source,
+              });
+            } else {
+              unresolved.push(`${act.artist} — ${title}`);
+            }
+          }
+        }
+        return { resolved, unresolved };
+      });
+
+      process.stdout.write(JSON.stringify({ resolved, unresolved }, null, 2) + "\n");
+      console.error(`Resolved ${resolved.length} track(s); ${unresolved.length} unresolved.`);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+program
+  .command("dj:build")
+  .description(
+    "Assemble the show manifest. Reads {tracks:[ResolvedTrack,...]} on stdin, writes the ordered " +
+      "running order to data/dj-show.json, and prints it. (DJ clips are interleaved here in Phase 2.)",
+  )
+  .option("--name <name>", "Roon playlist name to record in the manifest", ROON_PLAYLIST_NAME)
+  .action(async (opts: { name: string }) => {
+    try {
+      const raw = (await readStdin()).trim();
+      if (!raw) throw new Error("No JSON provided on stdin.");
+      const parsed = JSON.parse(raw) as { tracks: ResolvedTrack[] };
+      const tracks = parsed.tracks ?? [];
+
+      const segments: ShowSegment[] = tracks.map((t) => ({
+        kind: "track",
+        itemKey: t.itemKey,
+        artist: t.artist,
+        billedArtist: t.billedArtist,
+        title: t.matchedTitle || t.title,
+      }));
+
+      const show: DjShow = {
+        generatedAt: new Date().toISOString(),
+        playlistName: opts.name,
+        segments,
+      };
+      await saveDjShow(show);
+
+      console.log(`Built manifest with ${segments.length} track(s) → data/dj-show.json`);
+      console.log(`Playlist: ${show.playlistName}`);
+      segments.forEach((seg, i) => {
+        if (seg.kind === "track") console.log(`  ${i + 1}. ${seg.billedArtist} — ${seg.title}`);
+      });
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+program
+  .command("dj:playlist")
+  .description(
+    "Build the Roon playlist from data/dj-show.json: re-resolve each track in a live session and " +
+      "add it in order. Creates the playlist on the first track and appends the rest.",
+  )
+  .option("--name <name>", "playlist name (overrides the manifest)")
+  .option("--settle <ms>", "delay between adds, ms (keeps order stable)", "400")
+  .action(async (opts: { name?: string; settle: string }) => {
+    try {
+      const show = await loadDjShow();
+      const trackSegs = show.segments.filter((s): s is Extract<ShowSegment, { kind: "track" }> => s.kind === "track");
+      if (trackSegs.length === 0) {
+        throw new Error("No tracks in data/dj-show.json. Run dj:build first.");
+      }
+      const playlistName = opts.name || show.playlistName || ROON_PLAYLIST_NAME;
+      const settleMs = Number(opts.settle) || 0;
+
+      const { added, skipped } = await withRoon(async ({ browse }) => {
+        const added: string[] = [];
+        const skipped: string[] = [];
+        let isFirstAdd = true;
+        for (const seg of trackSegs) {
+          // item_keys are session-scoped, so re-resolve in this live session before adding.
+          const hit = await searchTrack(browse, seg.artist, seg.title);
+          if (!hit) {
+            skipped.push(`${seg.billedArtist} — ${seg.title} (not found)`);
+            continue;
+          }
+          try {
+            await addToPlaylist(browse, hit.itemKey, playlistName, { create: isFirstAdd });
+            added.push(`${seg.billedArtist} — ${seg.title}`);
+            isFirstAdd = false;
+            if (settleMs) await sleep(settleMs);
+          } catch (err) {
+            skipped.push(`${seg.billedArtist} — ${seg.title} (${err instanceof Error ? err.message : err})`);
+          }
+        }
+        return { added, skipped };
+      });
+
+      console.log(`Playlist "${playlistName}": added ${added.length} track(s) in order.`);
+      added.forEach((a, i) => console.log(`  ${i + 1}. ${a}`));
+      if (skipped.length) {
+        console.log(`\nSkipped ${skipped.length}:`);
+        skipped.forEach((s) => console.log(`  - ${s}`));
+      }
+      if (added.length) {
+        console.log(
+          `\nNote: a same-named playlist from a prior run isn't auto-removed — delete it in Roon if needed.`,
+        );
       }
     } catch (err) {
       fail(err);

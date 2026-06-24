@@ -22,7 +22,8 @@ Discogs API, Todoist API, the dedup ledger, and link building.
 | `/build-rubric` | Pulls Discogs, analyzes it, writes `data/taste-rubric.md`. |
 | `/scan-jazz`    | Fetches venues, matches shows, creates Todoist tasks. |
 | `/sync-playlist`| Builds a free Apple Music "listen ahead" song list for matched artists playing soon. |
-| `src/cli.ts`    | `discogs:dump`, `todoist:*`, `seen:*`, `links`, `lastfm:top`, `playlist:build`. |
+| `/dj-show`      | Builds a curated **Roon** playlist of upcoming matched artists (music-only for now). |
+| `src/cli.ts`    | `discogs:dump`, `todoist:*`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `roon:search`, `dj:*`. |
 
 ## Setup
 
@@ -79,6 +80,40 @@ Then, anytime:
 ```
 
 Open `data/playlist.md` and tap the song links to add them in Apple Music.
+
+## DJ show — a curated Roon playlist (optional)
+
+`/dj-show` assembles a single ordered **Roon** playlist of real recordings from the matched
+artists with an upcoming LA show. It's the foundation for a future "jazz radio hour" where
+ElevenLabs-voiced DJ commentary is interleaved between songs — but **this first phase is
+music-only** (it proves the Roon assembly path before any text-to-speech is added). See the full
+design in [`docs/dj-show.md`](docs/dj-show.md).
+
+> **Why Roon:** it's the one place that can hold both local DJ audio clips *and* streaming
+> (Qobuz) tracks in a single ordered playlist — needed once DJ commentary arrives. For now it
+> gives a clean, automatically curated jazz playlist from your upcoming shows.
+
+One-time setup:
+
+1. Run Roon on your network with a Qobuz subscription enabled.
+2. The first `/dj-show` (or `npm run downbeat -- roon:search …`) appears in Roon →
+   **Settings → Extensions** as **Downbeat DJ** — enable it once. The pairing token is then
+   cached under `data/.roon-state/`.
+3. Optionally set `ROON_PLAYLIST_NAME` in `.env` (default `Downbeat — Late Night`).
+
+Then, anytime:
+
+```sh
+/dj-show                 # in Claude Code — curates, resolves, and builds the Roon playlist
+
+# Or drive the CLI directly:
+npm run downbeat -- roon:search --artist "Bill Evans" --title "Waltz for Debby"   # pairing/search check
+npm run downbeat -- dj:resolve   < spec.json      # show spec → resolved Qobuz tracks
+npm run downbeat -- dj:build     < resolved.json  # → data/dj-show.json (running order)
+npm run downbeat -- dj:playlist                   # add tracks to the Roon playlist, in order
+```
+
+Open the named playlist in Roon and press play in whatever zone you like.
 
 ## Notes
 
