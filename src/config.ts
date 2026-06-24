@@ -69,8 +69,8 @@ export const ROON_ZONE = process.env.ROON_ZONE || "";
 /** ElevenLabs voice for the DJ. Default "Boe Deepman" — mellow late-night delivery. */
 export const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "XFQFwy8OEb9lvFQIMZ5a";
 
-/** ElevenLabs model id. eleven_multilingual_v2 is a good-quality default for narration. */
-export const ELEVENLABS_MODEL = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
+/** ElevenLabs model id. eleven_v3 is the most expressive model — good for lively narration. */
+export const ELEVENLABS_MODEL = process.env.ELEVENLABS_MODEL || "eleven_v3";
 
 /**
  * Playback speed for the DJ voice (ElevenLabs voice_settings.speed, 0.7–1.2; <1 is slower).
