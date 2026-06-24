@@ -39,7 +39,23 @@ Playlist sits in Roon, ready for the user to play whenever/wherever they like
 
 `data/dj-show.json` is the always-produced source-of-truth manifest. The Roon playlist is built from it; if Roon playlist assembly proves unworkable (see fact 1), the manifest + clip files are still a usable artifact.
 
-### Two load-bearing technical facts
+### Phase 0 findings (2026-06 spike against the live Core) — approach revised
+
+The spike answered fact 1, and the answer changed the design: **Roon's community Browse API exposes
+only transport actions on tracks — `Play Now` / `Add Next` / `Queue` / `Start Radio` — reached via
+search, library, OR an existing playlist. There is no `Add to Playlist` / `Add to Library` action,
+so the API cannot create or edit a saved playlist.** (It *can* open and play existing playlists.)
+
+**Revised approach: queue the show into a Roon zone** instead of building a saved playlist. The
+first track uses `Play Now` (replaces the queue and starts), the rest use `Queue` (append), so the
+show plays through in order. This needs a `zone_or_output_id` and the **transport** service (adding
+it changes the extension's requested services, so Roon prompts to re-enable "Downbeat DJ" once).
+Trade-off vs. the original vision: the show is *play-now in a chosen zone*, not a saved playlist you
+reopen later. `data/dj-show.json` remains the always-produced manifest. Track *resolution* via
+search works exactly as designed. Implemented commands: `roon:zones`, `dj:queue` (replaced
+`dj:playlist`).
+
+### Two load-bearing technical facts (original analysis, kept for context)
 
 1. **Playlist assembly via the community API is the main unknown — spike it first.** Roon's community API has no playlist *reorder* call, so order must be built by adding tracks to the playlist **one at a time, in sequence**. The mechanism is the Browse "Add to Playlist" action surfaced when you drill into a track's `item_key` (with a sub-action to create a new playlist or append to an existing one). This must be validated: confirm the Browse API actually exposes Add-to-Playlist, whether it can target a new vs. existing playlist by name, whether sequential adds preserve order (may need to await each action / add a short settle delay), and whether it works **without** a zone (adding to a playlist is not playback, so it likely needs no `zone_or_output_id` — confirm). If create/append isn't viable through the API, fall back to emitting `data/dj-show.json` + clips and assembling the playlist manually.
 

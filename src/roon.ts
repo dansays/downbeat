@@ -3,24 +3,31 @@ import { resolve } from "node:path";
 import RoonApi from "node-roon-api";
 import RoonApiStatus from "node-roon-api-status";
 import RoonApiBrowse from "node-roon-api-browse";
+import RoonApiTransport from "node-roon-api-transport";
 import { ROON_EXTENSION, roonStateDir } from "./config.ts";
 
 /**
  * Roon integration for /dj-show. One concern per module (like lastfm.ts/todoist.ts): connect to
- * the Core, search Qobuz tracks, and build an ordered playlist via the Browse "Add to Playlist"
- * action. We never select a zone or control transport — this only assembles a playlist.
+ * the Core, search Qobuz tracks, and load an ordered show into a Roon zone's play queue.
+ *
+ * Why a queue and not a saved playlist: a Phase-0 spike showed the community Browse API exposes
+ * only transport actions (Play Now / Add Next / Queue / Start Radio) on tracks — reached via
+ * search, library, OR an existing playlist. It has NO "Add to Playlist"/"Add to Library" action,
+ * so it cannot create or edit a saved playlist. Queueing to a zone is the only way to assemble an
+ * ordered show, and the only path that can later interleave local DJ clips (Phase 2).
  *
  * The node-roon-api is event/callback based and meant to run as a long-lived extension. `withRoon`
  * adapts it to one-shot CLI use: start discovery, wait for pairing, run the work, disconnect.
  *
  * NOTE: Roon Browse `item_key`s are session-scoped — a key is only valid within the live browse
  * session that produced it. They do NOT survive across CLI processes, so callers must resolve a
- * track and add it to the playlist within the *same* `withRoon` session.
+ * track and queue it within the *same* `withRoon` session.
  */
 
-/** What the work function receives: the live browse service for the paired Core. */
+/** What the work function receives: the live browse + transport services for the paired Core. */
 export interface RoonCtx {
-  browse: any; // RoonApiBrowse instance (untyped lib; see roon.d.ts)
+  browse: any; // RoonApiBrowse instance (untyped lib; see roon-api-shim.d.ts)
+  transport: any; // RoonApiTransport instance
 }
 
 const HIERARCHY = "search"; // all our browsing happens in the search hierarchy
@@ -44,7 +51,7 @@ function saveState(state: Record<string, unknown>): void {
  * actionable message if no paired Core appears within `timeoutMs` (the user must enable the
  * extension once in Roon → Settings → Extensions).
  */
-export async function withRoon<T>(fn: (ctx: RoonCtx) => Promise<T>, timeoutMs = 15000): Promise<T> {
+export async function withRoon<T>(fn: (ctx: RoonCtx) => Promise<T>, timeoutMs = 30000): Promise<T> {
   return new Promise<T>((resolvePromise, rejectPromise) => {
     let settled = false;
     let timer: NodeJS.Timeout | undefined;
@@ -59,8 +66,9 @@ export async function withRoon<T>(fn: (ctx: RoonCtx) => Promise<T>, timeoutMs = 
         settled = true;
         if (timer) clearTimeout(timer);
         const browse = core.services.RoonApiBrowse;
+        const transport = core.services.RoonApiTransport;
         try {
-          const result = await fn({ browse });
+          const result = await fn({ browse, transport });
           cleanup();
           resolvePromise(result);
         } catch (err) {
@@ -86,7 +94,7 @@ export async function withRoon<T>(fn: (ctx: RoonCtx) => Promise<T>, timeoutMs = 
     }
 
     roon.init_services({
-      required_services: [RoonApiBrowse],
+      required_services: [RoonApiBrowse, RoonApiTransport],
       provided_services: [svcStatus],
     });
     svcStatus.set_status("Ready to build a playlist", false);
@@ -188,51 +196,53 @@ export async function searchTrack(
   };
 }
 
+export interface Zone {
+  zoneId: string;
+  name: string;
+}
+
+/** List the Core's playback zones (display name + id) for the user to target. */
+export function listZones(transport: any): Promise<Zone[]> {
+  return new Promise((res, rej) => {
+    transport.get_zones((err: string | false, body: any) => {
+      if (err) rej(new Error(`Roon get_zones failed: ${err}`));
+      else res(((body?.zones ?? []) as any[]).map((z) => ({ zoneId: z.zone_id, name: z.display_name })));
+    });
+  });
+}
+
 /**
- * Add the track identified by `trackItemKey` to a named playlist, creating it on the first add and
- * appending on subsequent adds. Must be called in the same browse session that produced the key.
+ * Queue the track identified by `trackItemKey` into a zone. `mode: "playNow"` replaces the zone's
+ * queue with this track and starts playback (use for the first track of the show); `mode: "queue"`
+ * appends to the end (use for the rest), so the show plays through in order. Must be called in the
+ * same browse session that produced the key.
  *
- * The action path is: track → action list → "Add to Playlist" → choose "New Playlist" (naming it
- * via the input prompt) or an existing playlist by name. The exact action titles and the
- * input-prompt handshake are Roon's; this is the load-bearing flow the Phase 0 spike validates,
- * and the "available: …" errors below make mismatches debuggable.
+ * The action path is: track → (one-item wrapper) → action list → "Play Now"/"Queue". Every browse
+ * carries the zone, since these are transport actions. The "available: …" error makes any future
+ * action-title drift debuggable.
  */
-export async function addToPlaylist(
+export async function queueTrack(
   browse: any,
   trackItemKey: string,
-  playlistName: string,
-  opts: { create: boolean },
+  zoneId: string,
+  mode: "playNow" | "queue",
 ): Promise<void> {
-  // Drill into the track's action list.
-  await browseAsync(browse, { item_key: trackItemKey });
-  const actions = await loadItems(browse);
-  const addAction = findItem(actions, "Add to Playlist") ?? findItem(actions, "Playlist");
-  if (!addAction?.item_key) {
-    throw new Error(`No "Add to Playlist" action for this track. Available: ${titlesOf(actions)}`);
+  // Drill into the track. Roon wraps the action list one level deep (a single action_list item
+  // titled like the track), so descend through that wrapper to reach the real actions.
+  await browseAsync(browse, { item_key: trackItemKey, zone_or_output_id: zoneId });
+  let items = await loadItems(browse);
+  if (items.length === 1 && items[0]?.item_key && items[0]?.hint === "action_list") {
+    await browseAsync(browse, { item_key: items[0].item_key, zone_or_output_id: zoneId });
+    items = await loadItems(browse);
   }
 
-  // Drill into Add-to-Playlist: a list of existing playlists plus a "New Playlist" entry.
-  await browseAsync(browse, { item_key: addAction.item_key });
-  const choices = await loadItems(browse);
-
-  if (opts.create) {
-    const newEntry = findItem(choices, "New Playlist") ?? findItem(choices, "New");
-    if (!newEntry?.item_key) {
-      throw new Error(`No "New Playlist" option. Available: ${titlesOf(choices)}`);
-    }
-    // Selecting "New Playlist" prompts for a name; supply it as the browse input.
-    const body = await browseAsync(browse, { item_key: newEntry.item_key, input: playlistName });
-    assertNotError(body, `create playlist "${playlistName}"`);
-  } else {
-    const existing = findItem(choices, playlistName);
-    if (!existing?.item_key) {
-      throw new Error(
-        `Playlist "${playlistName}" not found to append to. Available: ${titlesOf(choices)}`,
-      );
-    }
-    const body = await browseAsync(browse, { item_key: existing.item_key });
-    assertNotError(body, `append to playlist "${playlistName}"`);
+  const wanted = mode === "playNow" ? "Play Now" : "Queue";
+  const action = findItem(items, wanted);
+  if (!action?.item_key) {
+    throw new Error(`No "${wanted}" action for this track. Available: ${titlesOf(items)}`);
   }
+  const body = await browseAsync(browse, { item_key: action.item_key, zone_or_output_id: zoneId });
+  assertNotError(body, wanted);
 }
 
 /** Throw if a browse response came back as an error message. */

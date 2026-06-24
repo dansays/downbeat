@@ -6,8 +6,8 @@ import { resolveProjectId, createTask } from "./todoist.ts";
 import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
-import { withRoon, searchTrack, addToPlaylist } from "./roon.ts";
-import { TODOIST_PROJECT, PATHS, ROON_PLAYLIST_NAME } from "./config.ts";
+import { withRoon, searchTrack, queueTrack, listZones, type Zone } from "./roon.ts";
+import { TODOIST_PROJECT, PATHS, ROON_PLAYLIST_NAME, ROON_ZONE } from "./config.ts";
 import type {
   TaskInput,
   SyncArtist,
@@ -290,6 +290,22 @@ program
   });
 
 program
+  .command("roon:zones")
+  .description("List the Roon zones you can queue a show into (name + id).")
+  .action(async () => {
+    try {
+      const zones = await withRoon(({ transport }) => listZones(transport));
+      if (zones.length === 0) {
+        console.log("No zones found. Make sure an output/zone is enabled in Roon.");
+        return;
+      }
+      for (const z of zones) console.log(`${z.name}\t${z.zoneId}`);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+program
   .command("dj:resolve")
   .description(
     "Resolve a show spec to Qobuz tracks. Reads a JSON array of " +
@@ -372,58 +388,77 @@ program
     }
   });
 
+/** Pick the target zone from the Core's zones, honoring an optional name/id request. */
+function resolveZone(zones: Zone[], requested: string): Zone {
+  if (requested) {
+    const want = requested.toLowerCase();
+    const match =
+      zones.find((z) => z.zoneId === requested) ??
+      zones.find((z) => z.name.toLowerCase() === want) ??
+      zones.find((z) => z.name.toLowerCase().includes(want));
+    if (!match) {
+      throw new Error(`Zone "${requested}" not found. Zones: ${zones.map((z) => z.name).join(", ")}`);
+    }
+    return match;
+  }
+  if (zones.length === 1) return zones[0]!;
+  throw new Error(
+    `Multiple zones — pass --zone (or set ROON_ZONE). Zones: ${zones.map((z) => z.name).join(", ")}`,
+  );
+}
+
 program
-  .command("dj:playlist")
+  .command("dj:queue")
   .description(
-    "Build the Roon playlist from data/dj-show.json: re-resolve each track in a live session and " +
-      "add it in order. Creates the playlist on the first track and appends the rest.",
+    "Queue the show from data/dj-show.json into a Roon zone, in order: the first track plays now " +
+      "and the rest are appended. Re-resolves each track in the live session. " +
+      "(The Roon API can't build a saved playlist; this loads the zone's play queue.)",
   )
-  .option("--name <name>", "playlist name (overrides the manifest)")
+  .option("--zone <zone>", "target zone name or id (overrides ROON_ZONE)", ROON_ZONE)
   .option("--settle <ms>", "delay between adds, ms (keeps order stable)", "400")
-  .action(async (opts: { name?: string; settle: string }) => {
+  .action(async (opts: { zone: string; settle: string }) => {
     try {
       const show = await loadDjShow();
-      const trackSegs = show.segments.filter((s): s is Extract<ShowSegment, { kind: "track" }> => s.kind === "track");
+      const trackSegs = show.segments.filter(
+        (s): s is Extract<ShowSegment, { kind: "track" }> => s.kind === "track",
+      );
       if (trackSegs.length === 0) {
         throw new Error("No tracks in data/dj-show.json. Run dj:build first.");
       }
-      const playlistName = opts.name || show.playlistName || ROON_PLAYLIST_NAME;
       const settleMs = Number(opts.settle) || 0;
 
-      const { added, skipped } = await withRoon(async ({ browse }) => {
+      const { zone, added, skipped } = await withRoon(async ({ browse, transport }) => {
+        const zone = resolveZone(await listZones(transport), opts.zone);
         const added: string[] = [];
         const skipped: string[] = [];
-        let isFirstAdd = true;
+        let isFirst = true;
         for (const seg of trackSegs) {
-          // item_keys are session-scoped, so re-resolve in this live session before adding.
+          // item_keys are session-scoped, so re-resolve in this live session before queueing.
           const hit = await searchTrack(browse, seg.artist, seg.title);
           if (!hit) {
             skipped.push(`${seg.billedArtist} — ${seg.title} (not found)`);
             continue;
           }
           try {
-            await addToPlaylist(browse, hit.itemKey, playlistName, { create: isFirstAdd });
+            // First track replaces the queue and starts; the rest append in order.
+            await queueTrack(browse, hit.itemKey, zone.zoneId, isFirst ? "playNow" : "queue");
             added.push(`${seg.billedArtist} — ${seg.title}`);
-            isFirstAdd = false;
+            isFirst = false;
             if (settleMs) await sleep(settleMs);
           } catch (err) {
             skipped.push(`${seg.billedArtist} — ${seg.title} (${err instanceof Error ? err.message : err})`);
           }
         }
-        return { added, skipped };
+        return { zone, added, skipped };
       });
 
-      console.log(`Playlist "${playlistName}": added ${added.length} track(s) in order.`);
+      console.log(`Zone "${zone.name}": queued ${added.length} track(s) in order.`);
       added.forEach((a, i) => console.log(`  ${i + 1}. ${a}`));
       if (skipped.length) {
         console.log(`\nSkipped ${skipped.length}:`);
         skipped.forEach((s) => console.log(`  - ${s}`));
       }
-      if (added.length) {
-        console.log(
-          `\nNote: a same-named playlist from a prior run isn't auto-removed — delete it in Roon if needed.`,
-        );
-      }
+      if (added.length) console.log(`\nThe show is playing/queued in "${zone.name}". Enjoy.`);
     } catch (err) {
       fail(err);
     }

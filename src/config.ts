@@ -49,8 +49,15 @@ export const roonStateDir = process.env.ROON_STATE_DIR || resolve(ROOT, "data/.r
  */
 export const djClipsDir = process.env.ROON_DJ_CLIPS_DIR || resolve(ROOT, "data/dj-clips");
 
-/** Name of the Roon playlist /dj-show creates or replaces. */
+/** Label recorded on the show manifest (the Roon API can't create a saved playlist by this name). */
 export const ROON_PLAYLIST_NAME = process.env.ROON_PLAYLIST_NAME || "Downbeat — Late Night";
+
+/**
+ * Default Roon zone (display name or zone_id) the show is queued into. Optional: if unset and the
+ * Core has exactly one zone, that zone is used; otherwise `dj:queue` lists the zones and asks for
+ * --zone. Discover names with `downbeat roon:zones`.
+ */
+export const ROON_ZONE = process.env.ROON_ZONE || "";
 
 /**
  * Identity Roon shows the user under Settings → Extensions when pairing. The user enables
