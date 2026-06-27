@@ -8,13 +8,12 @@ export interface Release {
   formats: string[];
 }
 
-/** An entry in the dedup ledger for a show already pushed to Todoist. */
+/** An entry in the dedup ledger for a matched show already recorded. */
 export interface SeenEvent {
   key: string; // `${venue}|${date}|${artist}` lowercased
   venue: string;
   date: string; // YYYY-MM-DD
   artist: string;
-  taskId?: string;
   addedAt: string; // ISO timestamp
 }
 
@@ -109,16 +108,4 @@ export interface DjShow {
   generatedAt: string; // ISO timestamp
   playlistName?: string; // Roon playlist this builds into
   segments: ShowSegment[];
-}
-
-/** Payload accepted by the `todoist:add` command (single or array via stdin). */
-export interface TaskInput {
-  content: string;
-  description?: string;
-  due_date?: string; // YYYY-MM-DD
-  project_id?: string;
-  // Optional dedup metadata; recorded in the ledger when present.
-  venue?: string;
-  date?: string;
-  artist?: string;
 }

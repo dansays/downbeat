@@ -2,7 +2,7 @@
   "name": "downbeat",
   "version": "0.1.0",
   "private": true,
-  "description": "Find live jazz shows you'll actually like and file them as Todoist review tasks.",
+  "description": "Find live jazz shows you'll actually like and build a Roon DJ radio show from them.",
   "type": "module",
   "bin": {
     "downbeat": "src/cli.ts"

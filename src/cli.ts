@@ -2,7 +2,6 @@
 import { Command } from "commander";
 import { writeFile } from "node:fs/promises";
 import { fetchCollection } from "./discogs.ts";
-import { resolveProjectId, createTask } from "./todoist.ts";
 import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
@@ -13,7 +12,6 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readdir, unlink, mkdir } from "node:fs/promises";
 import {
-  TODOIST_PROJECT,
   PATHS,
   ROON_PLAYLIST_NAME,
   ROON_ZONE,
@@ -28,7 +26,6 @@ import {
 
 const execFileP = promisify(execFile);
 import type {
-  TaskInput,
   SyncArtist,
   PlaylistTrack,
   ShowSpecArtist,
@@ -42,7 +39,7 @@ import type {
 const program = new Command();
 program
   .name("downbeat")
-  .description("Find live jazz shows you'll like and file them as Todoist review tasks.");
+  .description("Find live jazz shows you'll like and build a Roon DJ radio show from them.");
 
 /** Read all of stdin as a string. */
 async function readStdin(): Promise<string> {
@@ -64,56 +61,6 @@ program
       const releases = await fetchCollection();
       process.stdout.write(JSON.stringify(releases, null, 2) + "\n");
       console.error(`Fetched ${releases.length} releases.`);
-    } catch (err) {
-      fail(err);
-    }
-  });
-
-program
-  .command("todoist:project")
-  .description("Resolve (or create) a Todoist project by name and print its id.")
-  .option("--name <name>", "project name", TODOIST_PROJECT)
-  .action(async (opts: { name: string }) => {
-    try {
-      const id = await resolveProjectId(opts.name);
-      console.log(id);
-    } catch (err) {
-      fail(err);
-    }
-  });
-
-program
-  .command("todoist:add")
-  .description("Create one or more tasks. Reads a JSON object or array from stdin.")
-  .action(async () => {
-    try {
-      const raw = (await readStdin()).trim();
-      if (!raw) throw new Error("No JSON provided on stdin.");
-      const parsed = JSON.parse(raw) as TaskInput | TaskInput[];
-      const tasks = Array.isArray(parsed) ? parsed : [parsed];
-
-      // Resolve the default project once if any task omits a project_id.
-      let defaultProject: string | undefined;
-      if (tasks.some((t) => !t.project_id)) {
-        defaultProject = await resolveProjectId(TODOIST_PROJECT);
-      }
-
-      for (const t of tasks) {
-        const projectId = t.project_id ?? defaultProject;
-        const taskId = await createTask({ ...t, project_id: projectId });
-        console.log(`created ${taskId}: ${t.content}`);
-
-        // Record in the dedup ledger when event metadata is present.
-        if (t.venue && t.date && t.artist) {
-          await markSeen({
-            key: eventKey(t.venue, t.date, t.artist),
-            venue: t.venue,
-            date: t.date,
-            artist: t.artist,
-            taskId,
-          });
-        }
-      }
     } catch (err) {
       fail(err);
     }

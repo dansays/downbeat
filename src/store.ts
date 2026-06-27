@@ -24,7 +24,7 @@ export async function saveSeen(events: SeenEvent[]): Promise<void> {
   await writeFile(PATHS.seen, JSON.stringify(events, null, 2) + "\n", "utf8");
 }
 
-/** True if this event was already pushed to Todoist. */
+/** True if this event was already recorded in the dedup ledger. */
 export async function isSeen(key: string): Promise<boolean> {
   const seen = await loadSeen();
   return seen.some((e) => e.key === key);

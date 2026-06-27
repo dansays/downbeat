@@ -1,10 +1,11 @@
 ---
-description: Scan approved venues for upcoming shows that match your taste and file Todoist tasks
+description: Scan approved venues for upcoming shows that match your taste and record them to the ledger
 allowed-tools: Bash(npm run downbeat *), Bash(npx tsx *), Read, WebFetch, WebSearch
 ---
 
 Scan the approved jazz venues for upcoming shows, keep the ones that match the taste rubric,
-and create a "review" task in Todoist for each new match. Auto-create tasks (no confirmation gate).
+and record each new match in the dedup ledger (`seen-events.json`) so `/dj-show` can build a
+radio show from them. Auto-record (no confirmation gate).
 
 ## Steps
 
@@ -44,27 +45,14 @@ and create a "review" task in Todoist for each new match. Auto-create tasks (no 
    ```
    Skip any that print `seen`.
 
-5. For each NEW match, get artist links:
+5. For each NEW match, record it in the dedup ledger so `/dj-show` can pick it up later:
    ```
-   npm run downbeat -- links --artist "<artist>"
+   npm run downbeat -- seen:add --venue "<Venue>" --date "<YYYY-MM-DD>" --artist "<Artist>"
    ```
-   Then create the tasks. **Write the JSON to a temp file with the Write tool** (do NOT
-   `echo` it — the shell mangles `\n` escapes inside the description), then pipe the file in.
-   Batch all matches into one array. Each item:
-   ```json
-   [{
-     "content": "Review: <Artist> @ <Venue> — <Mon D>",
-     "description": "<why you'd like it>\n\nApple Music: <appleMusic>\nAllMusic: <allMusic>\nTickets: <ticketUrl>\nVenue: <Venue>",
-     "due_date": "<YYYY-MM-DD>",
-     "venue": "<Venue>", "date": "<YYYY-MM-DD>", "artist": "<Artist>"
-   }]
-   ```
-   Then:
-   ```
-   npm run downbeat -- todoist:add < /tmp/downbeat-tasks.json
-   ```
-   `todoist:add` resolves the project and records the dedup ledger automatically when
-   `venue`/`date`/`artist` are included. (Requires `TODOIST_TOKEN` in `.env`.)
+   `seen:add` appends `{venue, date, artist}` to `data/seen-events.json` (no-op if already
+   present). Note the one-to-two sentence rationale ("why you'd like it") for each match in the
+   summary you print — `/dj-show` re-derives its own commentary from the rubric, so the ledger
+   only needs `venue`/`date`/`artist`.
 
-6. Print a summary table: venues scanned (and any skipped/failed), shows found, matches kept,
-   tasks created, and dupes skipped.
+6. Print a summary table: venues scanned (and any skipped/failed), shows found, matches kept
+   (with rationale), matches recorded, and dupes skipped.

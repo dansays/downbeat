@@ -7,7 +7,7 @@ import RoonApiTransport from "node-roon-api-transport";
 import { ROON_EXTENSION, roonStateDir } from "./config.ts";
 
 /**
- * Roon integration for /dj-show. One concern per module (like lastfm.ts/todoist.ts): connect to
+ * Roon integration for /dj-show. One concern per module (like lastfm.ts): connect to
  * the Core, search Qobuz tracks, and load an ordered show into a Roon zone's play queue.
  *
  * Why a queue and not a saved playlist: a Phase-0 spike showed the community Browse API exposes
