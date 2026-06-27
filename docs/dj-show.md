@@ -111,7 +111,7 @@ Verified end-to-end: an 18-segment show (intro / per-act intros / tracks / outro
 
 - `types.ts`: `ShowSpecArtist`, `ResolvedTrack`, `ScriptSegment` (`slot: "intro"|"artist"|"outro"`), `DjClip`, `ShowSegment` (`{kind:"clip"…} | {kind:"track"…}`), `DjShow {generatedAt, playlistName?, segments[]}`.
 - `config.ts`: `djShow: data/dj-show.json`, `djClipsDir` (env `ROON_DJ_CLIPS_DIR`), `roonStateDir`.
-- `.env` + `.env.example` + README: `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` (default `XFQFwy8OEb9lvFQIMZ5a` — "Boe Deepman"), `ELEVENLABS_MODEL` (optional), `ROON_DJ_CLIPS_DIR`, `ROON_PLAYLIST_NAME` (default "Downbeat Radio").
+- `.env` + `.env.example` + README: `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` (default `XFQFwy8OEb9lvFQIMZ5a` — "Boe Deepman"), `ELEVENLABS_MODEL` (optional), `ROON_DJ_CLIPS_DIR`, `ROON_PLAYLIST_NAME` (default "The Blue Hour").
 - `.gitignore`: `data/dj-show.json`, clips dir, Roon state dir.
 
 ## Phasing

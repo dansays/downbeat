@@ -9,7 +9,7 @@ It works in three stages:
    your Discogs collection (loved artists weighted by album count, preferred styles/eras, and
    dislikes *inferred from what's absent* — e.g. acoustic Miles but no electric/fusion).
 3. **Scan & build the show** — each scan fetches venue calendars, matches upcoming shows against
-   the rubric, and records the matches; `/dj-show` then turns them into a curated **Downbeat Radio**
+   the rubric, and records the matches; `/dj-show` then turns them into a curated **The Blue Hour**
    show in Roon, with Stephen Holloway DJ commentary.
 
 ## Architecture
@@ -24,7 +24,7 @@ Discogs API, the dedup ledger, link building, Last.fm popularity, and Roon/Eleve
 | `/downbeat`     | Runs the whole pipeline end to end: `/scan-jazz` then `/dj-show`. |
 | `/scan-jazz`    | Fetches venues, matches shows, records matches to the ledger. |
 | `/sync-playlist`| Builds a free Apple Music "listen ahead" song list for matched artists playing soon. |
-| `/dj-show`      | Builds **Downbeat Radio** — a **Roon** show of curated tracks + Stephen Holloway DJ commentary — queued to a zone. |
+| `/dj-show`      | Builds **The Blue Hour** — a **Roon** show of curated tracks + Stephen Holloway DJ commentary — queued to a zone. |
 | `src/cli.ts`    | `discogs:dump`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `roon:*`, `dj:*`. |
 
 ## Setup
@@ -52,7 +52,7 @@ sections below.)
 # 2. Scan venues and record matching shows to the ledger
 /scan-jazz               # in Claude Code
 
-# 3. Build the Downbeat Radio show in Roon from the matches
+# 3. Build the Blue Hour show in Roon from the matches
 /dj-show                 # in Claude Code
 
 # Or do steps 2–3 in one pass:
@@ -90,9 +90,9 @@ Then, anytime:
 
 Open `data/playlist.md` and tap the song links to add them in Apple Music.
 
-## Downbeat Radio — a late-night jazz radio hour in Roon
+## The Blue Hour — a late-night jazz radio hour in Roon
 
-`/dj-show` produces **Downbeat Radio**, a late-night radio show from the matched artists with an
+`/dj-show` produces **The Blue Hour**, a late-night radio show from the matched artists with an
 upcoming LA show: curated recordings interleaved with short **Stephen Holloway** DJ commentary
 (voiced by ElevenLabs), loaded **in order into a Roon zone's play queue** — intro → each act's
 spoken intro → its tracks → … → outro. See the design in [`docs/dj-show.md`](docs/dj-show.md).

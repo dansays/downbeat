@@ -55,7 +55,7 @@ export const djClipCacheDir = resolve(ROOT, "data/.dj-clip-cache");
 export const DJ_CLIP_ARTIST = "Downbeat DJ";
 
 /** Label recorded on the show manifest (the Roon API can't create a saved playlist by this name). */
-export const ROON_PLAYLIST_NAME = process.env.ROON_PLAYLIST_NAME || "Downbeat Radio";
+export const ROON_PLAYLIST_NAME = process.env.ROON_PLAYLIST_NAME || "The Blue Hour";
 
 /**
  * Default Roon zone (display name or zone_id) the show is queued into. Optional: if unset and the

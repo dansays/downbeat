@@ -52,9 +52,9 @@ Last.fm + the rubric.
 
 5. **Write the Stephen Holloway script**, then synthesize it. Holloway is a warm late-night host
    with personality — unhurried, a little dry wit, evocative after-hours imagery, the odd aside —
-   but never corny or over-written. The show is called **Downbeat Radio**: in the **intro** he
-   welcomes the listener to Downbeat Radio and introduces himself by name; in the **outro** he
-   signs off as himself from Downbeat Radio.
+   but never corny or over-written. The show is called **The Blue Hour**: in the **intro** he
+   welcomes the listener to The Blue Hour and introduces himself by name; in the **outro** he
+   signs off as himself from The Blue Hour.
    Produce a JSON array of `ScriptSegment` — `{ "slot":"intro" }`, one
    `{ "slot":"artist", "artistKey":"<billedArtist>" }` per act (artistKey must equal the act's
    `billedArtist` so it interleaves correctly), and `{ "slot":"outro" }`, each with a `text` field.

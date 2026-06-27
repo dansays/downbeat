@@ -1,10 +1,10 @@
 ---
-description: Run the full Downbeat pipeline end to end — scan venues, match to taste, and build the Downbeat Radio show in Roon
+description: Run the full Downbeat pipeline end to end — scan venues, match to taste, and build the Blue Hour show in Roon
 allowed-tools: Bash(npm run downbeat *), Bash(npx tsx *), Bash(jq *), Read, Write, WebFetch, WebSearch
 ---
 
 Run the whole Downbeat pipeline in one pass: scan the approved venue calendars, match upcoming
-shows against the taste rubric, record the matches, and build the **Downbeat Radio** show into a
+shows against the taste rubric, record the matches, and build **The Blue Hour** show into a
 Roon zone. This is just the two existing skills chained — don't reinvent their logic; execute each
 in full, in order.
 
@@ -23,7 +23,7 @@ in full, in order.
 3. **Build the show** — execute the `/dj-show` skill end to end (read its file at
    `.claude/commands/dj-show.md` and follow every step): curate ~4–6 acts from the upcoming
    matches, pick 2–3 canonical tracks each, resolve against Roon/Qobuz, write + synthesize the
-   Stephen Holloway script (intro/outro/inter-act lead-ins for **Downbeat Radio**), build the
+   Stephen Holloway script (intro/outro/inter-act lead-ins for **The Blue Hour**), build the
    manifest, and queue it into the Roon zone (paused by default). Newly-recorded matches from step 1
    are eligible here automatically since both read the same ledger.
 
@@ -34,7 +34,7 @@ in full, in order.
 
 ## Notes
 - This does **not** run `/sync-playlist` (the optional free Apple Music listen-ahead list) — the
-  pipeline's output is the Downbeat Radio show. Run `/sync-playlist` separately if you want that.
+  pipeline's output is the Blue Hour show. Run `/sync-playlist` separately if you want that.
 - Prereqs are the union of both skills': `.env` with `LASTFM_API_KEY` + `ELEVENLABS_API_KEY`,
   Roon on the network with the **Downbeat DJ** extension enabled and `ROON_DJ_CLIPS_DIR` pointing
   at a Roon-watched folder, and `ffmpeg` installed. If a Roon prerequisite isn't met, step 1 still
