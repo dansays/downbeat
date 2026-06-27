@@ -78,9 +78,26 @@ export const ELEVENLABS_SPEED = Number(process.env.ELEVENLABS_SPEED) || 0.85;
 
 /**
  * Voice stability (ElevenLabs voice_settings.stability, 0–1). Lower = more expressive/variable,
- * higher = flatter/more consistent. Default 0.35 for an expressive late-night read.
+ * higher = flatter/more consistent. Default 0.5 — expressive enough for a late-night read while
+ * curbing eleven_v3's tendency to drift into a British accent (very low stability drifts more).
+ * If you still hear the accent wander, push this toward 0.7.
  */
-export const ELEVENLABS_STABILITY = Number(process.env.ELEVENLABS_STABILITY) || 0.35;
+export const ELEVENLABS_STABILITY = Number(process.env.ELEVENLABS_STABILITY) || 0.5;
+
+/**
+ * Voice similarity (ElevenLabs voice_settings.similarity_boost, 0–1). Higher anchors the output to
+ * the reference voice's own (American) accent, which is the main lever against eleven_v3 accent
+ * drift. Default 0.85.
+ */
+export const ELEVENLABS_SIMILARITY = Number(process.env.ELEVENLABS_SIMILARITY) || 0.85;
+
+/**
+ * Seconds of silence appended to each rendered clip. ElevenLabs (and gapless queue transitions in
+ * Roon) sometimes shave the last fraction of a second off the speech; a small silent tail means any
+ * clipping eats silence instead of the final word. Set to 0 to disable (keeps the fast stream-copy).
+ */
+export const DJ_CLIP_TAIL_PAD_SEC =
+  process.env.DJ_CLIP_TAIL_PAD_SEC !== undefined ? Number(process.env.DJ_CLIP_TAIL_PAD_SEC) : 0.75;
 
 /**
  * Identity Roon shows the user under Settings → Extensions when pairing. The user enables

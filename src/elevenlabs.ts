@@ -7,6 +7,7 @@ import {
   ELEVENLABS_MODEL,
   ELEVENLABS_SPEED,
   ELEVENLABS_STABILITY,
+  ELEVENLABS_SIMILARITY,
 } from "./config.ts";
 
 /**
@@ -25,9 +26,10 @@ export function clipHash(
   modelId: string,
   speed: number,
   stability: number,
+  similarity: number,
 ): string {
   return createHash("sha1")
-    .update(`${voiceId}|${modelId}|${speed}|${stability}|${text}`)
+    .update(`${voiceId}|${modelId}|${speed}|${stability}|${similarity}|${text}`)
     .digest("hex")
     .slice(0, 16);
 }
@@ -37,6 +39,7 @@ export interface SynthOptions {
   modelId?: string;
   speed?: number;
   stability?: number;
+  similarity?: number;
 }
 
 /**
@@ -61,6 +64,7 @@ export async function synthesize(
   const modelId = opts.modelId ?? ELEVENLABS_MODEL;
   const speed = opts.speed ?? ELEVENLABS_SPEED;
   const stability = opts.stability ?? ELEVENLABS_STABILITY;
+  const similarity = opts.similarity ?? ELEVENLABS_SIMILARITY;
 
   const res = await fetch(`${API}/${voiceId}?output_format=${OUTPUT_FORMAT}`, {
     method: "POST",
@@ -72,7 +76,9 @@ export async function synthesize(
     body: JSON.stringify({
       text,
       model_id: modelId,
-      voice_settings: { stability, similarity_boost: 0.75, speed },
+      // style: 0 keeps the read neutral; together with a high similarity_boost this is what holds
+      // the voice's native accent steady (eleven_v3 otherwise drifts, e.g. into British).
+      voice_settings: { stability, similarity_boost: similarity, style: 0, speed },
     }),
   });
 

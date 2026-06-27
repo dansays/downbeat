@@ -22,6 +22,8 @@ import {
   ELEVENLABS_MODEL,
   ELEVENLABS_SPEED,
   ELEVENLABS_STABILITY,
+  ELEVENLABS_SIMILARITY,
+  DJ_CLIP_TAIL_PAD_SEC,
 } from "./config.ts";
 
 const execFileP = promisify(execFile);
@@ -338,15 +340,25 @@ function fsSafe(name: string): string {
   return name.replace(/[/\\:*?"<>|]+/g, "_").trim();
 }
 
-/** Copy raw audio into the watched folder with ID3 tags so Roon indexes it findably. */
+/**
+ * Copy raw audio into the watched folder with ID3 tags so Roon indexes it findably. When
+ * `tailPadSec > 0`, append that much trailing silence (re-encoding) so a clipped transition or a
+ * truncated render eats silence instead of the last word; otherwise stream-copy (fast, lossless).
+ */
 async function tagClip(
   src: string,
   out: string,
   tags: { title: string; artist: string; album: string },
+  tailPadSec = 0,
 ): Promise<void> {
+  const audioArgs =
+    tailPadSec > 0
+      ? ["-af", `apad=pad_dur=${tailPadSec}`, "-c:a", "libmp3lame", "-b:a", "128k"]
+      : ["-c", "copy"];
   try {
     await execFileP("ffmpeg", [
-      "-y", "-loglevel", "error", "-i", src, "-c", "copy",
+      "-y", "-loglevel", "error", "-i", src,
+      ...audioArgs,
       "-metadata", `title=${tags.title}`,
       "-metadata", `artist=${tags.artist}`,
       "-metadata", `album=${tags.album}`,
@@ -370,9 +382,10 @@ program
   .option("--voice <id>", "ElevenLabs voice id", ELEVENLABS_VOICE_ID)
   .option("--model <id>", "ElevenLabs model id", ELEVENLABS_MODEL)
   .option("--speed <n>", "voice speed (0.7–1.2; <1 slower/moodier)", String(ELEVENLABS_SPEED))
-  .option("--stability <n>", "voice stability (0–1; lower = more expressive)", String(ELEVENLABS_STABILITY))
+  .option("--stability <n>", "voice stability (0–1; lower = more expressive, higher = less accent drift)", String(ELEVENLABS_STABILITY))
+  .option("--similarity <n>", "voice similarity_boost (0–1; higher anchors the native accent)", String(ELEVENLABS_SIMILARITY))
   .option("--album <name>", "ID3 album tag for the clips", ROON_PLAYLIST_NAME)
-  .action(async (opts: { voice: string; model: string; speed: string; stability: string; album: string }) => {
+  .action(async (opts: { voice: string; model: string; speed: string; stability: string; similarity: string; album: string }) => {
     try {
       const raw = (await readStdin()).trim();
       if (!raw) throw new Error("No JSON provided on stdin.");
@@ -393,19 +406,20 @@ program
 
       const speed = Number(opts.speed) || ELEVENLABS_SPEED;
       const stability = Number(opts.stability) || ELEVENLABS_STABILITY;
+      const similarity = Number(opts.similarity) || ELEVENLABS_SIMILARITY;
       const clips: DjClip[] = [];
       let synthed = 0;
       let cachedCount = 0;
       for (const seg of segments) {
         const title = clipTitle(seg.slot, seg.artistKey);
-        const hash = clipHash(seg.text, opts.voice, opts.model, speed, stability);
+        const hash = clipHash(seg.text, opts.voice, opts.model, speed, stability, similarity);
         // Raw audio is cached outside the watched folder so Roon never indexes duplicates.
         const rawPath = join(djClipCacheDir, `${hash}.mp3`);
-        const { cached } = await synthesize(seg.text, rawPath, { voiceId: opts.voice, modelId: opts.model, speed, stability });
+        const { cached } = await synthesize(seg.text, rawPath, { voiceId: opts.voice, modelId: opts.model, speed, stability, similarity });
         cached ? cachedCount++ : synthed++;
 
         const outPath = join(djClipsDir, `${fsSafe(`${prefix}${title}`)}.mp3`);
-        await tagClip(rawPath, outPath, { title, artist: DJ_CLIP_ARTIST, album: opts.album });
+        await tagClip(rawPath, outPath, { title, artist: DJ_CLIP_ARTIST, album: opts.album }, DJ_CLIP_TAIL_PAD_SEC);
         clips.push({ slot: seg.slot, artistKey: seg.artistKey, title, path: outPath, hash });
       }
 
