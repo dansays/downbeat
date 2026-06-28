@@ -14,8 +14,6 @@ export const PATHS = {
   venues: resolve(ROOT, "data/venues.md"),
   rubric: resolve(ROOT, "data/taste-rubric.md"),
   seen: resolve(ROOT, "data/seen-events.json"),
-  playlist: resolve(ROOT, "data/playlist.json"), // state for dedup/prune
-  playlistMd: resolve(ROOT, "data/playlist.md"), // human-readable listen-ahead list
   djShow: resolve(ROOT, "data/dj-show.json"), // source-of-truth manifest for /dj-show
   calendarIcs: resolve(ROOT, "docs/calendar.ics"), // published, subscribe-able show calendar
   calendarHtml: resolve(ROOT, "docs/index.html"), // landing/subscribe page served by Pages

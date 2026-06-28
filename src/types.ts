@@ -21,30 +21,6 @@ export interface SeenEvent {
   taskId?: string; // legacy field present in older ledger entries
 }
 
-/** A song on the listen-ahead list, tied to the show that put it there. */
-export interface PlaylistTrack {
-  title: string;
-  artist: string; // normalized lookup artist
-  billedArtist: string; // how the act was billed at the venue
-  venue: string;
-  showDate: string; // YYYY-MM-DD — used to prune after the show passes
-  appleMusicUrl: string; // tap-to-add search link
-  addedAt: string; // ISO timestamp
-}
-
-/** Persisted state for the listen-ahead list (source of truth for dedup + prune). */
-export interface PlaylistState {
-  tracks: PlaylistTrack[];
-}
-
-/** One upcoming matched act to sync, produced by /sync-playlist and piped to playlist:sync. */
-export interface SyncArtist {
-  artist: string; // normalized lookup artist (e.g. "Amanda Castro")
-  billedArtist: string; // venue billing (e.g. "The Amanda Castro Band")
-  venue: string;
-  showDate: string; // YYYY-MM-DD
-}
-
 // --- /dj-show ---------------------------------------------------------------
 
 /** One curated act in the show spec piped to `dj:resolve` (produced by the /dj-show skill). */

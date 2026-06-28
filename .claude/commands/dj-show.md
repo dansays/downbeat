@@ -27,7 +27,7 @@ Last.fm + the rubric.
    strongest rubric matches that are likely to have catalog on Qobuz; drop the rest and report them.
 
 2. **Normalize each billed name to the artist whose catalog we'll play**, tracking *why* (the DJ
-   needs it) — same rules as `/sync-playlist`:
+   needs it):
    - Strip ensemble suffixes ("Yotam Silberstein Trio" → "Yotam Silberstein"). No substitution.
    - **Tributes / "Music of X"** and **leaders with no Qobuz catalog:** play the honored/source
      artist's own recordings and record it as a *substitution* (e.g. "Jaz Sawyer Quartet: Music of

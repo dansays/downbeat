@@ -45,8 +45,7 @@ reinvent their logic; execute each in full, in order.
    **"Save Queue as Playlist"** to keep it.
 
 ## Notes
-- This does **not** run `/sync-playlist` (the optional free Apple Music listen-ahead list) — the
-  pipeline's output is the Blue Hour show. Run `/sync-playlist` separately if you want that.
+- The pipeline's outputs are the published show calendar and the Blue Hour show in Roon.
 - Prereqs are the union of both skills': `.env` with `LASTFM_API_KEY` + `ELEVENLABS_API_KEY`,
   Roon on the network with the **Downbeat DJ** extension enabled and `ROON_DJ_CLIPS_DIR` pointing
   at a Roon-watched folder, and `ffmpeg` installed. If a Roon prerequisite isn't met, steps 1–2
