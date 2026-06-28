@@ -66,3 +66,10 @@ the rubric can't score. Mine it for rooms that bill actual artists.
 - Notes: Gastropub booking live music across genres — ONLY include jazz shows (skip rock,
   pop, singer-songwriter, etc.), like Blue Note (Hollywood). Calendar may list generic
   "Jazz Night" with no billed artist; note those but they can't be scored. Sourced from LA Jazz.
+
+## The Baked Potato
+- Location: 3787 Cahuenga Blvd W, Studio City, Los Angeles
+- Calendar: https://www.thebakedpotato.com/events-calendar/
+- Notes: Legendary club, but heavily **jazz-fusion** oriented (a rubric Avoid signal) — most
+  bookings are fusion / jazz-rock / funk-fusion and should be skipped. Keep only the occasional
+  straight-ahead, acoustic, or standards/swing act. Expect most nights here to be dropped.
