@@ -53,8 +53,9 @@ radio show from them. Auto-record (no confirmation gate).
      --time "<7:30 PM or 19:30>" --url "<ticket/info link>" --description "<why-it-matches>" \
      --confidence "<strong|good|tentative>"
    ```
-   `--confidence` maps to the rubric's scoring tiers and shows on the calendar as an emoji
-   (🎯 strong / 👍 good / 🤔 worth a look):
+   `--confidence` maps to the rubric's scoring tiers. The calendar flags only the standouts (🎯
+   strong) and close calls (🤔 tentative); a **good** match shows no emoji (being on the list is
+   signal enough), so still record it as `good`:
    - **strong** — a Loved Artist, a direct loved-artist tie (e.g. a tribute or a known sideman of
      one), or a nationally-known torchbearer of a preferred style.
    - **good** — a solid preferred-style match (the default for most kept shows).
