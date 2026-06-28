@@ -26,8 +26,9 @@ reinvent their logic; execute each in full, in order.
    `main` `/docs`. The calendar then lives at `https://dansays.github.io/downbeat/calendar.ics`,
    subscribe via `webcal://…`.)
 
-3. **Gate.** After the scan, check the ledger for shows with `date` >= today
-   (`data/seen-events.json`). If there are **no upcoming matches at all**, stop here and report that
+3. **Gate.** After the scan, check the ledger for shows happening at least a day out (`date` >
+   today, in `data/seen-events.json`) — same-day shows don't count, since the show needs a day's
+   ticket-buying notice. If there are **no such upcoming matches**, stop here and report that
    there's nothing to build a show from yet — don't run an empty `/dj-show`. Otherwise continue.
 
 4. **Build the show** — execute the `/dj-show` skill end to end (read its file at

@@ -21,9 +21,10 @@ Last.fm + the rubric.
 
 ## Steps
 
-1. Read `data/seen-events.json` and `data/taste-rubric.md`. Keep only shows with `date` >= today.
-   A full ledger is many shows — curate a tight show (aim ~4–6 acts), favoring the strongest
-   rubric matches that are likely to have catalog on Qobuz; drop the rest and report them.
+1. Read `data/seen-events.json` and `data/taste-rubric.md`. Keep only shows happening **at least a
+   day out** (`date` > today) — **drop same-day shows**, since you need a day's notice to get
+   tickets. A full ledger is many shows — curate a tight show (aim ~4–6 acts), favoring the
+   strongest rubric matches that are likely to have catalog on Qobuz; drop the rest and report them.
 
 2. **Normalize each billed name to the artist whose catalog we'll play**, tracking *why* (the DJ
    needs it) — same rules as `/sync-playlist`:
