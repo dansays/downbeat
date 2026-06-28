@@ -1,0 +1,232 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Downbeat//LA Jazz Picks//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Downbeat — LA Jazz Picks
+X-WR-TIMEZONE:America/Los_Angeles
+X-PUBLISHED-TTL:PT12H
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+BEGIN:VTIMEZONE
+TZID:America/Los_Angeles
+X-LIC-LOCATION:America/Los_Angeles
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+TZNAME:PDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+TZNAME:PST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-06-30-seth-macfarlane-and-his-chamber-orchest
+ ra@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260630
+DTEND;VALUE=DATE:20260701
+SUMMARY:Seth MacFarlane and his Chamber Orchestra — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-02-ty-taylor-mid-century-romance-jazz@dans
+ ays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260702
+DTEND;VALUE=DATE:20260703
+SUMMARY:Ty Taylor: Mid-Century Romance Jazz — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-03-kathleen-grace-larry-koonse@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260703
+DTEND;VALUE=DATE:20260704
+SUMMARY:Kathleen Grace & Larry Koonse — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-03-luke-carlsen-fresh-rhythm-band@dansays.
+ github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260703
+DTEND;VALUE=DATE:20260704
+SUMMARY:Luke Carlsen & Fresh Rhythm Band — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:jazz-at-lacma-2026-07-03-ray-charles-alumni-band@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260703
+DTEND;VALUE=DATE:20260704
+SUMMARY:Ray Charles Alumni Band — Jazz at LACMA
+LOCATION:Smidt Welcome Plaza\, LACMA\, 5905 Wilshire Blvd\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-04-daniel-rotem-quintet@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260705
+SUMMARY:Daniel Rotem Quintet — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-08-patrick-barnitt-d-ben-jamin-orchestra@d
+ ansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260708
+DTEND;VALUE=DATE:20260709
+SUMMARY:Patrick Barnitt & D. Ben-Jamin' Orchestra — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-09-emma-dayhuff-sextet@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260709
+DTEND;VALUE=DATE:20260710
+SUMMARY:Emma Dayhuff Sextet — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-10-oscar-hernandez-alma-libre@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260710
+DTEND;VALUE=DATE:20260711
+SUMMARY:Oscar Hernandez & Alma Libre — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:jazz-at-lacma-2026-07-10-jonathan-pinson-s-boom-clap@dansays.github.i
+ o
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260710
+DTEND;VALUE=DATE:20260711
+SUMMARY:Jonathan Pinson's Boom Clap — Jazz at LACMA
+LOCATION:Smidt Welcome Plaza\, LACMA\, 5905 Wilshire Blvd\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-11-teka@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260711
+DTEND;VALUE=DATE:20260712
+SUMMARY:TEKA — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-11-euman-renfroe-carroll-trio-feat-devin-daniels@da
+ nsays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260711
+DTEND;VALUE=DATE:20260712
+SUMMARY:Euman/Renfroe/Carroll Trio feat. Devin Daniels — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:jazz-at-lacma-2026-07-17-ray-fuller-band@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260717
+DTEND;VALUE=DATE:20260718
+SUMMARY:Ray Fuller Band — Jazz at LACMA
+LOCATION:Smidt Welcome Plaza\, LACMA\, 5905 Wilshire Blvd\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:blue-note-hollywood-2026-07-18-brian-blade-the-fellowship-band@dansay
+ s.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260718
+DTEND;VALUE=DATE:20260719
+SUMMARY:Brian Blade & The Fellowship Band — Blue Note Hollywood
+LOCATION:Hollywood\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-18-the-amanda-castro-band@dansays.github.i
+ o
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260718
+DTEND;VALUE=DATE:20260719
+SUMMARY:The Amanda Castro Band — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-21-brent-fischer-orchestra@dansays.github.
+ io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260721
+DTEND;VALUE=DATE:20260722
+SUMMARY:Brent Fischer Orchestra — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-22-martin-nevin-with-anthony-wilson-christian-euman
+ @dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260722
+DTEND;VALUE=DATE:20260723
+SUMMARY:Martin Nevin with Anthony Wilson & Christian Euman — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-22-terrell-edwards-unforgettable@dansays.g
+ ithub.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260722
+DTEND;VALUE=DATE:20260723
+SUMMARY:Terrell Edwards: Unforgettable — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-24-brenna-whitaker@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260724
+DTEND;VALUE=DATE:20260725
+SUMMARY:Brenna Whitaker — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-26-the-singers-in-law@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260726
+DTEND;VALUE=DATE:20260727
+SUMMARY:The Singers in Law — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-29-chloe-perrier-french-heart-jazz-band@da
+ nsays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:Chloe Perrier & French Heart Jazz Band — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-29-adi-meyerson-dark-matter@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:Adi Meyerson & Dark Matter — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-07-30-reggie-quinerly@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260730
+DTEND;VALUE=DATE:20260731
+SUMMARY:Reggie Quinerly — Sam First
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+END:VEVENT
+BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-07-31-louie-cruz-beltran@dansays.github.io
+DTSTAMP:20260628T001109Z
+DTSTART;VALUE=DATE:20260731
+DTEND;VALUE=DATE:20260801
+SUMMARY:Louie Cruz Beltran — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+END:VEVENT
+END:VCALENDAR

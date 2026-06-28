@@ -45,14 +45,26 @@ radio show from them. Auto-record (no confirmation gate).
    ```
    Skip any that print `seen`.
 
-5. For each NEW match, record it in the dedup ledger so `/dj-show` can pick it up later:
+5. For each NEW match, record it in the dedup ledger so `/dj-show` can pick it up later. Pass the
+   show **time**, **ticket/info URL**, and the **rationale** you wrote in step 3 — they enrich the
+   published calendar (see step 6):
    ```
-   npm run downbeat -- seen:add --venue "<Venue>" --date "<YYYY-MM-DD>" --artist "<Artist>"
+   npm run downbeat -- seen:add --venue "<Venue>" --date "<YYYY-MM-DD>" --artist "<Artist>" \
+     --time "<7:30 PM or 19:30>" --url "<ticket/info link>" --description "<why-it-matches>"
    ```
-   `seen:add` appends `{venue, date, artist}` to `data/seen-events.json` (no-op if already
-   present). Note the one-to-two sentence rationale ("why you'd like it") for each match in the
-   summary you print — `/dj-show` re-derives its own commentary from the rubric, so the ledger
-   only needs `venue`/`date`/`artist`.
+   `--time/--url/--description` are optional; include whatever the scan found. `seen:add` is a
+   no-op on the `{venue, date, artist}` dedup key if already present, **but it will backfill** any
+   of time/url/description that a prior entry was missing — so re-running a scan enriches old rows.
+   `/dj-show` still re-derives its own commentary from the rubric; the description here is for the
+   calendar.
 
-6. Print a summary table: venues scanned (and any skipped/failed), shows found, matches kept
+6. **Refresh the calendar** from the ledger:
+   ```
+   npm run downbeat -- ics:build
+   ```
+   This (re)writes `docs/calendar.ics` and `docs/index.html` (upcoming shows). To publish the
+   update, commit and push `docs/` — GitHub Pages serves it at
+   `https://dansays.github.io/downbeat/calendar.ics` (subscribe via `webcal://…`).
+
+7. Print a summary table: venues scanned (and any skipped/failed), shows found, matches kept
    (with rationale), matches recorded, and dupes skipped.

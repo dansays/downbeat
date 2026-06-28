@@ -25,7 +25,7 @@ Discogs API, the dedup ledger, link building, Last.fm popularity, and Roon/Eleve
 | `/scan-jazz`    | Fetches venues, matches shows, records matches to the ledger. |
 | `/sync-playlist`| Builds a free Apple Music "listen ahead" song list for matched artists playing soon. |
 | `/dj-show`      | Builds **The Blue Hour** — a **Roon** show of curated tracks + Stephen Holloway DJ commentary — queued to a zone. |
-| `src/cli.ts`    | `discogs:dump`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `roon:*`, `dj:*`. |
+| `src/cli.ts`    | `discogs:dump`, `seen:*`, `links`, `lastfm:top`, `playlist:build`, `ics:build`, `roon:*`, `dj:*`. |
 
 ## Setup
 
@@ -89,6 +89,27 @@ Then, anytime:
 ```
 
 Open `data/playlist.md` and tap the song links to add them in Apple Music.
+
+## Subscribe to the show calendar
+
+Every scan publishes a subscribe-able calendar of the upcoming matched shows — with dates, times,
+ticket links, and a one-line "why you'd like it" — built straight from the ledger:
+
+```sh
+npm run downbeat -- ics:build   # writes docs/calendar.ics + docs/index.html (upcoming shows)
+```
+
+`/scan-jazz` and `/downbeat` run this for you; committing and pushing `docs/` publishes it via
+**GitHub Pages**:
+
+- **Calendar:** `https://dansays.github.io/downbeat/calendar.ics`
+- **Subscribe (auto-refreshing):** `webcal://dansays.github.io/downbeat/calendar.ics` — or open the
+  landing page at `https://dansays.github.io/downbeat/` and tap **Subscribe**.
+
+One-time setup: enable Pages at repo **Settings → Pages → Deploy from a branch → `main` `/docs`**.
+Shows with a captured start time become timed events (America/Los_Angeles, 2-hour default);
+older entries without a time show as all-day until a re-scan backfills them. Override the public
+URL with `CALENDAR_BASE_URL`.
 
 ## The Blue Hour — a late-night jazz radio hour in Roon
 

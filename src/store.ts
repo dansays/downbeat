@@ -30,10 +30,25 @@ export async function isSeen(key: string): Promise<boolean> {
   return seen.some((e) => e.key === key);
 }
 
-/** Append an event to the ledger (no-op if already present). */
+/**
+ * Append an event to the ledger, or — if the key already exists — backfill any enrichment
+ * (time/ticketUrl/description) that a later scan provides but the stored entry is missing. The
+ * dedup key and original `addedAt` are preserved, so this never creates duplicates.
+ */
 export async function markSeen(entry: Omit<SeenEvent, "addedAt">): Promise<void> {
   const seen = await loadSeen();
-  if (seen.some((e) => e.key === entry.key)) return;
+  const existing = seen.find((e) => e.key === entry.key);
+  if (existing) {
+    let changed = false;
+    for (const field of ["time", "ticketUrl", "description"] as const) {
+      if (entry[field] && !existing[field]) {
+        existing[field] = entry[field];
+        changed = true;
+      }
+    }
+    if (changed) await saveSeen(seen);
+    return;
+  }
   seen.push({ ...entry, addedAt: new Date().toISOString() });
   await saveSeen(seen);
 }

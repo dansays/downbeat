@@ -2,12 +2,13 @@
 import { Command } from "commander";
 import { writeFile } from "node:fs/promises";
 import { fetchCollection } from "./discogs.ts";
-import { eventKey, isSeen, markSeen, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
+import { eventKey, isSeen, markSeen, loadSeen, readVenues, loadPlaylist, savePlaylist, loadDjShow, saveDjShow } from "./store.ts";
 import { artistLinks, songLink } from "./links.ts";
 import { topTracks } from "./lastfm.ts";
 import { withRoon, searchTrack, queueTrack, controlZone, listZones, searchLocalClip, type Zone } from "./roon.ts";
 import { synthesize, clipHash } from "./elevenlabs.ts";
-import { join } from "node:path";
+import { buildIcs, renderCalendarHtml, parseVenueLocations, venueLocator } from "./ics.ts";
+import { join, dirname } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readdir, unlink, mkdir } from "node:fs/promises";
@@ -15,6 +16,7 @@ import {
   PATHS,
   ROON_PLAYLIST_NAME,
   ROON_ZONE,
+  CALENDAR_BASE_URL,
   djClipsDir,
   djClipCacheDir,
   DJ_CLIP_ARTIST,
@@ -83,19 +85,47 @@ program
     }
   });
 
+/** Normalize a show time to 24h "HH:MM". Accepts "19:30", "7:30 PM", "7 pm"; "" if unparseable. */
+function normalizeTime(raw?: string): string | undefined {
+  if (!raw) return undefined;
+  const s = raw.trim();
+  const m = s.match(/^(\d{1,2})(?::(\d{2}))?\s*([ap]\.?m\.?)?$/i);
+  if (!m) return undefined;
+  let hh = Number(m[1]);
+  const mm = m[2] ? Number(m[2]) : 0;
+  const ampm = m[3]?.toLowerCase().replace(/\./g, "");
+  if (ampm === "pm" && hh < 12) hh += 12;
+  if (ampm === "am" && hh === 12) hh = 0;
+  if (hh > 23 || mm > 59) return undefined;
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+}
+
 program
   .command("seen:add")
   .description("Record a venue/date/artist in the dedup ledger without creating a task.")
   .requiredOption("--venue <venue>")
   .requiredOption("--date <date>", "YYYY-MM-DD")
   .requiredOption("--artist <artist>")
-  .action(async (opts: { venue: string; date: string; artist: string }) => {
+  .option("--time <time>", "show start time (e.g. 19:30 or '7:30 PM'); enriches the calendar")
+  .option("--url <url>", "ticket/info link for the show")
+  .option("--description <text>", "one- to two-sentence why-it-matches rationale")
+  .action(async (opts: {
+    venue: string;
+    date: string;
+    artist: string;
+    time?: string;
+    url?: string;
+    description?: string;
+  }) => {
     try {
       await markSeen({
         key: eventKey(opts.venue, opts.date, opts.artist),
         venue: opts.venue,
         date: opts.date,
         artist: opts.artist,
+        time: normalizeTime(opts.time),
+        ticketUrl: opts.url,
+        description: opts.description,
       });
       console.log("ok");
     } catch (err) {
@@ -110,6 +140,42 @@ program
   .action((opts: { artist: string }) => {
     const links = artistLinks(opts.artist);
     console.log(JSON.stringify(links, null, 2));
+  });
+
+program
+  .command("ics:build")
+  .description(
+    "Build the subscribe-able show calendar from the dedup ledger. Writes docs/calendar.ics " +
+      "(iCalendar) and docs/index.html (subscribe page); by default only upcoming shows. Commit " +
+      "and push docs/ to publish via GitHub Pages.",
+  )
+  .option("--all", "include past shows too (default: upcoming only)")
+  .option("--name <name>", "calendar display name", "Downbeat — LA Jazz Picks")
+  .action(async (opts: { all?: boolean; name: string }) => {
+    try {
+      const events = await loadSeen();
+      const now = today();
+      const shows = (opts.all ? events : events.filter((e) => e.date >= now)).sort((a, b) =>
+        a.date === b.date ? (a.time ?? "").localeCompare(b.time ?? "") : a.date.localeCompare(b.date),
+      );
+
+      const venueLocation = venueLocator(parseVenueLocations(await readVenues()));
+      const calOpts = { calName: opts.name, baseUrl: CALENDAR_BASE_URL, now: new Date(), venueLocation };
+
+      await mkdir(dirname(PATHS.calendarIcs), { recursive: true });
+      await writeFile(PATHS.calendarIcs, buildIcs(shows, calOpts), "utf8");
+      await writeFile(PATHS.calendarHtml, renderCalendarHtml(shows, calOpts), "utf8");
+
+      const timed = shows.filter((s) => s.time).length;
+      console.log(
+        `Built calendar: ${shows.length} show(s) (${timed} timed, ${shows.length - timed} all-day) ` +
+          `→ docs/calendar.ics + docs/index.html`,
+      );
+      console.log(`Subscribe URL: ${CALENDAR_BASE_URL}/calendar.ics`);
+      console.log(`Webcal:        ${CALENDAR_BASE_URL.replace(/^https?:\/\//, "webcal://")}/calendar.ics`);
+    } catch (err) {
+      fail(err);
+    }
   });
 
 function today(): string {

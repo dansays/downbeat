@@ -17,7 +17,16 @@ export const PATHS = {
   playlist: resolve(ROOT, "data/playlist.json"), // state for dedup/prune
   playlistMd: resolve(ROOT, "data/playlist.md"), // human-readable listen-ahead list
   djShow: resolve(ROOT, "data/dj-show.json"), // source-of-truth manifest for /dj-show
+  calendarIcs: resolve(ROOT, "docs/calendar.ics"), // published, subscribe-able show calendar
+  calendarHtml: resolve(ROOT, "docs/index.html"), // landing/subscribe page served by Pages
 } as const;
+
+/**
+ * Public base URL the calendar is served from (GitHub Pages). Used for the per-event UID domain
+ * and the subscribe links on the landing page. Override with CALENDAR_BASE_URL (no trailing slash).
+ */
+export const CALENDAR_BASE_URL =
+  process.env.CALENDAR_BASE_URL || "https://dansays.github.io/downbeat";
 
 /** Read a required env var or throw a helpful error. */
 export function requireEnv(name: string): string {
