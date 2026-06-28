@@ -26,9 +26,40 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
+UID:vibrato-grill-jazz-2026-06-27-tawanda@dansays.github.io
+DTSTAMP:20260628T002241Z
+DTSTART;TZID=America/Los_Angeles:20260627T190000
+DTEND;TZID=America/Los_Angeles:20260627T210000
+SUMMARY:TAWANDA — Vibrato Grill Jazz
+LOCATION:2930 Beverly Glen Circle\, Bel Air (Herb Alpert's club)
+DESCRIPTION:Jazz & soul vocalist working standards with a contemporary tw
+ ist — in the vocal-standards vein the rubric favors.\n\nTickets/info: h
+ ttps://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-grill-a
+ nd-jazz/events/tawanda-jazz-soul-with-a-twist-2026-06-27
+URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
+ ill-and-jazz/events/tawanda-jazz-soul-with-a-twist-2026-06-27
+END:VEVENT
+BEGIN:VEVENT
+UID:sam-first-2026-06-27-yotam-silberstein-trio-with-john-clayton-roy-mcc
+ urdy@dansays.github.io
+DTSTAMP:20260628T002241Z
+DTSTART;TZID=America/Los_Angeles:20260627T193000
+DTEND;TZID=America/Los_Angeles:20260627T213000
+SUMMARY:Yotam Silberstein Trio with John Clayton & Roy McCurdy — Sam Fi
+ rst
+LOCATION:6171 W Century Blvd (near LAX)\, Los Angeles
+DESCRIPTION:Straight-ahead\, melody-forward guitar in the Wes Montgomery 
+ / Kenny Burrell / Joe Pass lineage\, in an acoustic trio with bassist Joh
+ n Clayton and drummer Roy McCurdy (a Cannonball Adderley alumnus).\n\nTic
+ kets/info: https://www.samfirstbar.com/events/yotam-silberstein-trio-with
+ -john-clayton-roy-mccurdy-1
+URL:https://www.samfirstbar.com/events/yotam-silberstein-trio-with-john-c
+ layton-roy-mccurdy-1
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-06-30-seth-macfarlane-and-his-chamber-orchest
  ra@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260630T180000
 DTEND;TZID=America/Los_Angeles:20260630T200000
 SUMMARY:Seth MacFarlane and his Chamber Orchestra — Vibrato Grill Jazz
@@ -44,7 +75,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-02-ty-taylor-mid-century-romance-jazz@dans
  ays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260702T190000
 DTEND;TZID=America/Los_Angeles:20260702T210000
 SUMMARY:Ty Taylor: Mid-Century Romance Jazz — Vibrato Grill Jazz
@@ -59,7 +90,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-03-ray-charles-alumni-band@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260703T180000
 DTEND;TZID=America/Los_Angeles:20260703T200000
 SUMMARY:Ray Charles Alumni Band — Jazz at LACMA
@@ -72,7 +103,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-03-luke-carlsen-fresh-rhythm-band@dansays.
  github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260703T190000
 DTEND;TZID=America/Los_Angeles:20260703T210000
 SUMMARY:Luke Carlsen & Fresh Rhythm Band — Vibrato Grill Jazz
@@ -85,7 +116,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-03-kathleen-grace-larry-koonse@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260703T193000
 DTEND;TZID=America/Los_Angeles:20260703T213000
 SUMMARY:Kathleen Grace & Larry Koonse — Sam First
@@ -99,7 +130,7 @@ URL:https://www.samfirstbar.com/events/kathleen-grace-larry-koonse-the-ar
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-04-daniel-rotem-quintet@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260704T193000
 DTEND;TZID=America/Los_Angeles:20260704T213000
 SUMMARY:Daniel Rotem Quintet — Sam First
@@ -114,7 +145,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-08-patrick-barnitt-d-ben-jamin-orchestra@d
  ansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260708T190000
 DTEND;TZID=America/Los_Angeles:20260708T210000
 SUMMARY:Patrick Barnitt & D. Ben-Jamin' Orchestra — Vibrato Grill Jazz
@@ -129,7 +160,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-09-emma-dayhuff-sextet@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260709T193000
 DTEND;TZID=America/Los_Angeles:20260709T213000
 SUMMARY:Emma Dayhuff Sextet — Sam First
@@ -144,7 +175,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-10-jonathan-pinson-s-boom-clap@dansays.github.i
  o
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260710T180000
 DTEND;TZID=America/Los_Angeles:20260710T200000
 SUMMARY:Jonathan Pinson's Boom Clap — Jazz at LACMA
@@ -156,7 +187,7 @@ URL:https://www.lacma.org/event/jazz-lacma-jonathan-pinson-boom-clap
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-10-oscar-hernandez-alma-libre@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260710T193000
 DTEND;TZID=America/Los_Angeles:20260710T213000
 SUMMARY:Oscar Hernandez & Alma Libre — Sam First
@@ -170,7 +201,7 @@ URL:https://www.samfirstbar.com/events/oscar-hernandez-alma-libre-with-ka
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-11-teka@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260711T190000
 DTEND;TZID=America/Los_Angeles:20260711T210000
 SUMMARY:TEKA — Vibrato Grill Jazz
@@ -185,7 +216,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-11-euman-renfroe-carroll-trio-feat-devin-daniels@da
  nsays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260711T193000
 DTEND;TZID=America/Los_Angeles:20260711T213000
 SUMMARY:Euman/Renfroe/Carroll Trio feat. Devin Daniels — Sam First
@@ -199,7 +230,7 @@ URL:https://www.samfirstbar.com/events/euman-renfroe-carroll-trio-feat-de
 END:VEVENT
 BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-17-ray-fuller-band@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260717T180000
 DTEND;TZID=America/Los_Angeles:20260717T200000
 SUMMARY:Ray Fuller Band — Jazz at LACMA
@@ -212,7 +243,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:blue-note-hollywood-2026-07-18-brian-blade-the-fellowship-band@dansay
  s.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;VALUE=DATE:20260718
 DTEND;VALUE=DATE:20260719
 SUMMARY:Brian Blade & The Fellowship Band — Blue Note Hollywood
@@ -227,7 +258,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-18-the-amanda-castro-band@dansays.github.i
  o
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260718T190000
 DTEND;TZID=America/Los_Angeles:20260718T210000
 SUMMARY:The Amanda Castro Band — Vibrato Grill Jazz
@@ -243,7 +274,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-21-brent-fischer-orchestra@dansays.github.
  io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260721T193000
 DTEND;TZID=America/Los_Angeles:20260721T213000
 SUMMARY:Brent Fischer Orchestra — Vibrato Grill Jazz
@@ -258,7 +289,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-22-terrell-edwards-unforgettable@dansays.g
  ithub.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260722T190000
 DTEND;TZID=America/Los_Angeles:20260722T210000
 SUMMARY:Terrell Edwards: Unforgettable — Vibrato Grill Jazz
@@ -272,7 +303,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-22-martin-nevin-with-anthony-wilson-christian-euman
  @dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260722T193000
 DTEND;TZID=America/Los_Angeles:20260722T213000
 SUMMARY:Martin Nevin with Anthony Wilson & Christian Euman — Sam First
@@ -286,7 +317,7 @@ URL:https://www.samfirstbar.com/events/martin-nevin-with-anthony-wilson-c
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-24-brenna-whitaker@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260724T190000
 DTEND;TZID=America/Los_Angeles:20260724T210000
 SUMMARY:Brenna Whitaker — Vibrato Grill Jazz
@@ -301,7 +332,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-26-the-singers-in-law@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260726T193000
 DTEND;TZID=America/Los_Angeles:20260726T213000
 SUMMARY:The Singers in Law — Vibrato Grill Jazz
@@ -317,7 +348,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-29-chloe-perrier-french-heart-jazz-band@da
  nsays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260729T190000
 DTEND;TZID=America/Los_Angeles:20260729T210000
 SUMMARY:Chloe Perrier & French Heart Jazz Band — Vibrato Grill Jazz
@@ -332,7 +363,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-29-adi-meyerson-dark-matter@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260729T193000
 DTEND;TZID=America/Los_Angeles:20260729T213000
 SUMMARY:Adi Meyerson & Dark Matter — Sam First
@@ -346,7 +377,7 @@ URL:https://www.samfirstbar.com/events/adi-meyerson-dark-matter-with-nico
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-30-reggie-quinerly@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260730T193000
 DTEND;TZID=America/Los_Angeles:20260730T213000
 SUMMARY:Reggie Quinerly — Sam First
@@ -360,7 +391,7 @@ URL:https://www.samfirstbar.com/events/quinerly-plays-the-connoisseur-ser
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-31-louie-cruz-beltran@dansays.github.io
-DTSTAMP:20260628T002000Z
+DTSTAMP:20260628T002241Z
 DTSTART;TZID=America/Los_Angeles:20260731T190000
 DTEND;TZID=America/Los_Angeles:20260731T210000
 SUMMARY:Louie Cruz Beltran — Vibrato Grill Jazz

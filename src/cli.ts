@@ -178,8 +178,19 @@ program
     }
   });
 
+/**
+ * Today's date (YYYY-MM-DD) in America/Los_Angeles — the timezone of every venue we track. Using
+ * the local calendar date (not UTC) keeps a show listed through its actual LA day, so a show
+ * tonight doesn't drop off the calendar / playlist once UTC rolls over in the evening. en-CA
+ * formats as YYYY-MM-DD; the IANA zone comes from Intl, no dependency.
+ */
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }
 
 /** Identity of a synced show, for dedup against the playlist state. */
