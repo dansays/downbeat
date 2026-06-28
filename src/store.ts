@@ -40,9 +40,9 @@ export async function markSeen(entry: Omit<SeenEvent, "addedAt">): Promise<void>
   const existing = seen.find((e) => e.key === entry.key);
   if (existing) {
     let changed = false;
-    for (const field of ["time", "ticketUrl", "description"] as const) {
+    for (const field of ["time", "ticketUrl", "description", "confidence"] as const) {
       if (entry[field] && !existing[field]) {
-        existing[field] = entry[field];
+        existing[field] = entry[field] as never;
         changed = true;
       }
     }

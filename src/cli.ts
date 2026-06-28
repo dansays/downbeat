@@ -97,6 +97,12 @@ function normalizeTime(raw?: string): string | undefined {
   return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
 }
 
+/** Validate a rubric-confidence level; returns undefined if absent or unrecognized. */
+function normalizeConfidence(raw?: string): "strong" | "good" | "tentative" | undefined {
+  const s = raw?.trim().toLowerCase();
+  return s === "strong" || s === "good" || s === "tentative" ? s : undefined;
+}
+
 program
   .command("seen:add")
   .description("Record a venue/date/artist in the dedup ledger without creating a task.")
@@ -106,6 +112,7 @@ program
   .option("--time <time>", "show start time (e.g. 19:30 or '7:30 PM'); enriches the calendar")
   .option("--url <url>", "ticket/info link for the show")
   .option("--description <text>", "one- to two-sentence why-it-matches rationale")
+  .option("--confidence <level>", "match strength vs the rubric: strong | good | tentative")
   .action(async (opts: {
     venue: string;
     date: string;
@@ -113,8 +120,13 @@ program
     time?: string;
     url?: string;
     description?: string;
+    confidence?: string;
   }) => {
     try {
+      const confidence = normalizeConfidence(opts.confidence);
+      if (opts.confidence && !confidence) {
+        throw new Error(`--confidence must be one of: strong, good, tentative (got "${opts.confidence}")`);
+      }
       await markSeen({
         key: eventKey(opts.venue, opts.date, opts.artist),
         venue: opts.venue,
@@ -123,6 +135,7 @@ program
         time: normalizeTime(opts.time),
         ticketUrl: opts.url,
         description: opts.description,
+        confidence,
       });
       console.log("ok");
     } catch (err) {

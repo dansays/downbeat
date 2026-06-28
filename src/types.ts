@@ -17,6 +17,7 @@ export interface SeenEvent {
   time?: string; // "HH:MM" 24h, America/Los_Angeles; omitted ⇒ all-day calendar event
   ticketUrl?: string; // ticket/info link for the show
   description?: string; // one–two sentence "why it matches" rationale, for the calendar
+  confidence?: "strong" | "good" | "tentative"; // how close a match it is to the taste rubric
   addedAt: string; // ISO timestamp
   taskId?: string; // legacy field present in older ledger entries
 }

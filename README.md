@@ -69,7 +69,9 @@ npm run downbeat -- lastfm:top --artist "John Coltrane"
 ## Subscribe to the show calendar
 
 Every scan publishes a subscribe-able calendar of the upcoming matched shows — with dates, times,
-ticket links, and a one-line "why you'd like it" — built straight from the ledger:
+ticket links, a one-line "why you'd like it", a **match-confidence emoji** (🎯 strong / 👍 good /
+🤔 worth a look, shown in the event title too), and per-show **map / Apple Music / AllMusic**
+links — built straight from the ledger:
 
 ```sh
 npm run downbeat -- ics:build   # writes docs/calendar.ics + docs/index.html (upcoming shows)

@@ -46,17 +46,26 @@ radio show from them. Auto-record (no confirmation gate).
    Skip any that print `seen`.
 
 5. For each NEW match, record it in the dedup ledger so `/dj-show` can pick it up later. Pass the
-   show **time**, **ticket/info URL**, and the **rationale** you wrote in step 3 — they enrich the
-   published calendar (see step 6):
+   show **time**, **ticket/info URL**, the **rationale** you wrote in step 3, and a **confidence**
+   level — they enrich the published calendar (see step 6):
    ```
    npm run downbeat -- seen:add --venue "<Venue>" --date "<YYYY-MM-DD>" --artist "<Artist>" \
-     --time "<7:30 PM or 19:30>" --url "<ticket/info link>" --description "<why-it-matches>"
+     --time "<7:30 PM or 19:30>" --url "<ticket/info link>" --description "<why-it-matches>" \
+     --confidence "<strong|good|tentative>"
    ```
-   `--time/--url/--description` are optional; include whatever the scan found. `seen:add` is a
-   no-op on the `{venue, date, artist}` dedup key if already present, **but it will backfill** any
-   of time/url/description that a prior entry was missing — so re-running a scan enriches old rows.
-   `/dj-show` still re-derives its own commentary from the rubric; the description here is for the
-   calendar.
+   `--confidence` maps to the rubric's scoring tiers and shows on the calendar as an emoji
+   (🎯 strong / 👍 good / 🤔 worth a look):
+   - **strong** — a Loved Artist, a direct loved-artist tie (e.g. a tribute or a known sideman of
+     one), or a nationally-known torchbearer of a preferred style.
+   - **good** — a solid preferred-style match (the default for most kept shows).
+   - **tentative** — included with a caveat: style unconfirmed even after a quick look, or a
+     permissive close-call (e.g. a free LACMA show).
+
+   All flags are optional; include whatever the scan found. `seen:add` is a no-op on the
+   `{venue, date, artist}` dedup key if already present, **but it will backfill** any of
+   time/url/description/confidence that a prior entry was missing — so re-running a scan enriches
+   old rows. `/dj-show` still re-derives its own commentary from the rubric; the description here is
+   for the calendar.
 
 6. **Refresh the calendar** from the ledger:
    ```
