@@ -4,6 +4,12 @@ The scan reads this file, fetches each `Calendar` URL, and extracts upcoming sho
 Add, remove, or correct venues by editing this list. Keep the `- Calendar:` line on each
 venue so the scanner can find the page to fetch.
 
+**Discovery source — LA Jazz (https://www.lajazz.com/):** a one-person, very-1997-looking
+directory of LA venues, restaurants, and bars that feature regular or occasional jazz. Good place
+to find new venues to add here. Caveats: many listed spots have no calendar at all, and those that
+do often publish only a generic "Jazz" / "Brazilian Jazz Night" line with no billed artist — which
+the rubric can't score. Mine it for rooms that bill actual artists.
+
 ## Sam First
 - Location: 6171 W Century Blvd (near LAX), Los Angeles
 - Calendar: https://www.samfirstbar.com/upcoming-shows
@@ -39,3 +45,24 @@ venue so the scanner can find the page to fetch.
   won't enjoy, but when it's a close call, err toward adding. Still skip clear avoid signals
   (jazz-fusion, smooth jazz, free/avant/spiritual-avant, hip-hop-jazz). Always report the
   full lineup in the scan summary even for shows not filed, since he wants to keep tabs on it.
+
+## The Jazz Salon
+- Location: Los Angeles Athletic Club, 431 W 7th St, Downtown Los Angeles
+- Calendar: https://jazzsalon.org
+- Notes: Weekly curated jazz concert series. Likely well-aligned (a dedicated listening series,
+  not a multi-genre room). Site may not be machine-readable — if no per-date lineup is found,
+  note it and move on. Sourced from LA Jazz.
+
+## Birds of a Feather Jazz Lounge
+- Location: Au Lac (Vietnamese vegan restaurant), 710 W 1st St, Downtown Los Angeles
+- Calendar: https://www.birdsofafeatherjazzlounge.com
+- Notes: Intimate jazz lounge inside a restaurant. Look for billed artists on the site's
+  calendar; if listings are just generic "Live Jazz" with no act named, note it and move on
+  (nothing to score). Sourced from LA Jazz.
+
+## Edwin Mills
+- Location: 22 Mills Pl, Pasadena
+- Calendar: https://edwinmills.com/events-live-music/
+- Notes: Gastropub booking live music across genres — ONLY include jazz shows (skip rock,
+  pop, singer-songwriter, etc.), like Blue Note (Hollywood). Calendar may list generic
+  "Jazz Night" with no billed artist; note those but they can't be scored. Sourced from LA Jazz.

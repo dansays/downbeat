@@ -26,8 +26,22 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-06-27-the-peter-smith-trio@dansay
+ s.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;VALUE=DATE:20260627
+DTEND;VALUE=DATE:20260628
+SUMMARY:The Peter Smith Trio — Birds of a Feather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:Straight-ahead piano trio (Peter Smith\, piano) — a piano-t
+ rio billing\, a cross-cutting favorite.\n\nTickets/info: https://www.even
+ tbrite.com/e/1990363048457
+URL:https://www.eventbrite.com/e/1990363048457
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-06-27-tawanda@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260627T190000
 DTEND;TZID=America/Los_Angeles:20260627T210000
 SUMMARY:TAWANDA — Vibrato Grill Jazz
@@ -42,7 +56,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-06-27-yotam-silberstein-trio-with-john-clayton-roy-mcc
  urdy@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260627T193000
 DTEND;TZID=America/Los_Angeles:20260627T213000
 SUMMARY:Yotam Silberstein Trio with John Clayton & Roy McCurdy — Sam Fi
@@ -57,9 +71,46 @@ URL:https://www.samfirstbar.com/events/yotam-silberstein-trio-with-john-c
  layton-roy-mccurdy-1
 END:VEVENT
 BEGIN:VEVENT
+UID:the-jazz-salon-2026-06-28-rose-mallett@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260628T180000
+DTEND;TZID=America/Los_Angeles:20260628T200000
+SUMMARY:Rose Mallett — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz vocalist in the curated Sunday Night Jazz Salon series 
+ — vocal standards in the Ella/Sinatra/Krall tradition.\n\nTickets/info:
+  https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:edwin-mills-2026-06-29-the-riner-scivally-trio@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260629T180000
+DTEND;TZID=America/Los_Angeles:20260629T200000
+SUMMARY:The Riner Scivally Trio — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Jazz-standards and Brazilian guitar trio — melodic and acou
+ stic.\n\nTickets/info: https://edwinmills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-06-30-the-ben-scholz-trio@dansays
+ .github.io
+DTSTAMP:20260628T023909Z
+DTSTART;VALUE=DATE:20260630
+DTEND;VALUE=DATE:20260701
+SUMMARY:The Ben Scholz Trio — Birds of a Feather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:Straight-ahead trio featuring guitarist Bruce Forman — acou
+ stic and melodic.\n\nTickets/info: https://www.eventbrite.com/e/199093312
+ 6576
+URL:https://www.eventbrite.com/e/1990933126576
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-06-30-seth-macfarlane-and-his-chamber-orchest
  ra@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260630T180000
 DTEND;TZID=America/Los_Angeles:20260630T200000
 SUMMARY:Seth MacFarlane and his Chamber Orchestra — Vibrato Grill Jazz
@@ -73,9 +124,56 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
  ill-and-jazz/events/seth-mac-farlane-and-his-chamber-orchestra-2026-06-30
 END:VEVENT
 BEGIN:VEVENT
+UID:edwin-mills-2026-06-30-the-david-eastlee-trio@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260630T180000
+DTEND;TZID=America/Los_Angeles:20260630T200000
+SUMMARY:The David Eastlee Trio — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Jazz-standards trio.\n\nTickets/info: https://edwinmills.com/
+ events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:edwin-mills-2026-07-01-the-david-eastlee-trio@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260701T180000
+DTEND;TZID=America/Los_Angeles:20260701T200000
+SUMMARY:The David Eastlee Trio — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Jazz-standards trio.\n\nTickets/info: https://edwinmills.com/
+ events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-07-02-mark-shilansky-friends@dans
+ ays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;VALUE=DATE:20260702
+DTEND;VALUE=DATE:20260703
+SUMMARY:Mark Shilansky & Friends — Birds of a Feather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:Jazz pianist leading a straight-ahead small group.\n\nTickets
+ /info: https://www.eventbrite.com/e/1990934628067
+URL:https://www.eventbrite.com/e/1990934628067
+END:VEVENT
+BEGIN:VEVENT
+UID:edwin-mills-2026-07-02-doug-macdonald@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260702T180000
+DTEND;TZID=America/Los_Angeles:20260702T200000
+SUMMARY:Doug MacDonald — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Respected straight-ahead jazz guitarist in the Wes Montgomery
+  / Kenny Burrell / Joe Pass lineage.\n\nTickets/info: https://edwinmills.
+ com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-02-ty-taylor-mid-century-romance-jazz@dans
  ays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260702T190000
 DTEND;TZID=America/Los_Angeles:20260702T210000
 SUMMARY:Ty Taylor: Mid-Century Romance Jazz — Vibrato Grill Jazz
@@ -90,7 +188,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-03-ray-charles-alumni-band@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260703T180000
 DTEND;TZID=America/Los_Angeles:20260703T200000
 SUMMARY:Ray Charles Alumni Band — Jazz at LACMA
@@ -103,7 +201,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-03-luke-carlsen-fresh-rhythm-band@dansays.
  github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260703T190000
 DTEND;TZID=America/Los_Angeles:20260703T210000
 SUMMARY:Luke Carlsen & Fresh Rhythm Band — Vibrato Grill Jazz
@@ -116,7 +214,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-03-kathleen-grace-larry-koonse@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260703T193000
 DTEND;TZID=America/Los_Angeles:20260703T213000
 SUMMARY:Kathleen Grace & Larry Koonse — Sam First
@@ -129,8 +227,19 @@ URL:https://www.samfirstbar.com/events/kathleen-grace-larry-koonse-the-ar
  t-of-the-duo
 END:VEVENT
 BEGIN:VEVENT
+UID:edwin-mills-2026-07-04-ed-romero@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260704T190000
+DTEND;TZID=America/Los_Angeles:20260704T210000
+SUMMARY:Ed Romero — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Veteran LA jazz saxophonist — straight-ahead.\n\nTickets/in
+ fo: https://edwinmills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
 UID:sam-first-2026-07-04-daniel-rotem-quintet@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260704T193000
 DTEND;TZID=America/Los_Angeles:20260704T213000
 SUMMARY:Daniel Rotem Quintet — Sam First
@@ -143,9 +252,44 @@ URL:https://www.samfirstbar.com/events/daniel-rotem-quintet-with-jeff-par
  ker-joshua-white-darek-oles-mark-ferber
 END:VEVENT
 BEGIN:VEVENT
+UID:the-jazz-salon-2026-07-05-betty-bryant@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260705T180000
+DTEND;TZID=America/Los_Angeles:20260705T200000
+SUMMARY:Betty Bryant — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Veteran jazz pianist-vocalist — swing and standards\, piano
+ -led.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:edwin-mills-2026-07-06-the-riner-scivally-trio@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260706T180000
+DTEND;TZID=America/Los_Angeles:20260706T200000
+SUMMARY:The Riner Scivally Trio — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Jazz-standards and Brazilian guitar trio — melodic and acou
+ stic.\n\nTickets/info: https://edwinmills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-07-07-the-addison-rifkind-quartet
+ @dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;VALUE=DATE:20260707
+DTEND;VALUE=DATE:20260708
+SUMMARY:The Addison Rifkind Quartet — Birds of a Feather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:Saxophone-led straight-ahead jazz quartet.\n\nTickets/info: h
+ ttps://www.eventbrite.com/e/1990662434930
+URL:https://www.eventbrite.com/e/1990662434930
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-08-patrick-barnitt-d-ben-jamin-orchestra@d
  ansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260708T190000
 DTEND;TZID=America/Los_Angeles:20260708T210000
 SUMMARY:Patrick Barnitt & D. Ben-Jamin' Orchestra — Vibrato Grill Jazz
@@ -159,8 +303,21 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
  -08
 END:VEVENT
 BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-07-09-david-arnay-quartet@dansays
+ .github.io
+DTSTAMP:20260628T023909Z
+DTSTART;VALUE=DATE:20260709
+DTEND;VALUE=DATE:20260710
+SUMMARY:David Arnay Quartet — Birds of a Feather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:Pianist David Arnay's quartet — post-bop / straight-ahead.\
+ n\nTickets/info: https://www.eventbrite.com/e/1990659846187
+URL:https://www.eventbrite.com/e/1990659846187
+END:VEVENT
+BEGIN:VEVENT
 UID:sam-first-2026-07-09-emma-dayhuff-sextet@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260709T193000
 DTEND;TZID=America/Los_Angeles:20260709T213000
 SUMMARY:Emma Dayhuff Sextet — Sam First
@@ -175,7 +332,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-10-jonathan-pinson-s-boom-clap@dansays.github.i
  o
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260710T180000
 DTEND;TZID=America/Los_Angeles:20260710T200000
 SUMMARY:Jonathan Pinson's Boom Clap — Jazz at LACMA
@@ -186,8 +343,19 @@ DESCRIPTION:Free LACMA series. Modern jazz led by drummer Jonathan Pinson
 URL:https://www.lacma.org/event/jazz-lacma-jonathan-pinson-boom-clap
 END:VEVENT
 BEGIN:VEVENT
+UID:edwin-mills-2026-07-10-grace-fae-and-the-grandbirds@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260710T190000
+DTEND;TZID=America/Los_Angeles:20260710T210000
+SUMMARY:Grace Fae and The Grandbirds — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Vintage jazz and swing vocal.\n\nTickets/info: https://edwinm
+ ills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
 UID:sam-first-2026-07-10-oscar-hernandez-alma-libre@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260710T193000
 DTEND;TZID=America/Los_Angeles:20260710T213000
 SUMMARY:Oscar Hernandez & Alma Libre — Sam First
@@ -201,7 +369,7 @@ URL:https://www.samfirstbar.com/events/oscar-hernandez-alma-libre-with-ka
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-11-teka@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260711T190000
 DTEND;TZID=America/Los_Angeles:20260711T210000
 SUMMARY:TEKA — Vibrato Grill Jazz
@@ -216,7 +384,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-11-euman-renfroe-carroll-trio-feat-devin-daniels@da
  nsays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260711T193000
 DTEND;TZID=America/Los_Angeles:20260711T213000
 SUMMARY:Euman/Renfroe/Carroll Trio feat. Devin Daniels — Sam First
@@ -229,8 +397,33 @@ URL:https://www.samfirstbar.com/events/euman-renfroe-carroll-trio-feat-de
  vin-daniels
 END:VEVENT
 BEGIN:VEVENT
+UID:the-jazz-salon-2026-07-12-sacha-boutros@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260712T180000
+DTEND;TZID=America/Los_Angeles:20260712T200000
+SUMMARY:Sacha Boutros — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz vocalist working standards and Latin repertoire — voca
+ l-standards lineage.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:birds-of-a-feather-jazz-lounge-2026-07-12-trios-night-mat-yang-trio-e
+ lder-gindroz-trio@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260712T183000
+DTEND;TZID=America/Los_Angeles:20260712T203000
+SUMMARY:Trios Night: Mat Yang Trio & Elder Gindroz Trio — Birds of a Fe
+ ather Jazz Lounge
+LOCATION:Au Lac (Vietnamese vegan restaurant)\, 710 W 1st St\, Downtown L
+ os Angeles
+DESCRIPTION:A double bill of acoustic jazz trios.\n\nTickets/info: https:
+ //www.eventbrite.com/e/1992244626307
+URL:https://www.eventbrite.com/e/1992244626307
+END:VEVENT
+BEGIN:VEVENT
 UID:jazz-at-lacma-2026-07-17-ray-fuller-band@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260717T180000
 DTEND;TZID=America/Los_Angeles:20260717T200000
 SUMMARY:Ray Fuller Band — Jazz at LACMA
@@ -243,7 +436,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:blue-note-hollywood-2026-07-18-brian-blade-the-fellowship-band@dansay
  s.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;VALUE=DATE:20260718
 DTEND;VALUE=DATE:20260719
 SUMMARY:Brian Blade & The Fellowship Band — Blue Note Hollywood
@@ -258,7 +451,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-18-the-amanda-castro-band@dansays.github.i
  o
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260718T190000
 DTEND;TZID=America/Los_Angeles:20260718T210000
 SUMMARY:The Amanda Castro Band — Vibrato Grill Jazz
@@ -272,9 +465,31 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
  s-jazz-swing-and-pop-2026-07-18
 END:VEVENT
 BEGIN:VEVENT
+UID:edwin-mills-2026-07-18-chloe-perrier@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260718T190000
+DTEND;TZID=America/Los_Angeles:20260718T210000
+SUMMARY:Chloe Perrier — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:French / gypsy-swing jazz vocalist — melodic and acoustic.\
+ n\nTickets/info: https://edwinmills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-07-19-karrin-allyson@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260719T180000
+DTEND;TZID=America/Los_Angeles:20260719T200000
+SUMMARY:Karrin Allyson — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Grammy-nominated jazz vocalist — bop-informed standards\; a
+  strong vocal-standards match.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-21-brent-fischer-orchestra@dansays.github.
  io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260721T193000
 DTEND;TZID=America/Los_Angeles:20260721T213000
 SUMMARY:Brent Fischer Orchestra — Vibrato Grill Jazz
@@ -289,7 +504,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-22-terrell-edwards-unforgettable@dansays.g
  ithub.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260722T190000
 DTEND;TZID=America/Los_Angeles:20260722T210000
 SUMMARY:Terrell Edwards: Unforgettable — Vibrato Grill Jazz
@@ -303,7 +518,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-22-martin-nevin-with-anthony-wilson-christian-euman
  @dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260722T193000
 DTEND;TZID=America/Los_Angeles:20260722T213000
 SUMMARY:Martin Nevin with Anthony Wilson & Christian Euman — Sam First
@@ -317,7 +532,7 @@ URL:https://www.samfirstbar.com/events/martin-nevin-with-anthony-wilson-c
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-24-brenna-whitaker@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260724T190000
 DTEND;TZID=America/Los_Angeles:20260724T210000
 SUMMARY:Brenna Whitaker — Vibrato Grill Jazz
@@ -331,8 +546,30 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
  4
 END:VEVENT
 BEGIN:VEVENT
+UID:edwin-mills-2026-07-24-grace-fae-and-the-grandbirds@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260724T190000
+DTEND;TZID=America/Los_Angeles:20260724T210000
+SUMMARY:Grace Fae and The Grandbirds — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Vintage jazz and swing vocal.\n\nTickets/info: https://edwinm
+ ills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-07-26-tawanda@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260726T180000
+DTEND;TZID=America/Los_Angeles:20260726T200000
+SUMMARY:Tawanda — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz and soul vocalist in the vocal-standards vein.\n\nTicket
+ s/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-26-the-singers-in-law@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260726T193000
 DTEND;TZID=America/Los_Angeles:20260726T213000
 SUMMARY:The Singers in Law — Vibrato Grill Jazz
@@ -348,7 +585,7 @@ END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-29-chloe-perrier-french-heart-jazz-band@da
  nsays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260729T190000
 DTEND;TZID=America/Los_Angeles:20260729T210000
 SUMMARY:Chloe Perrier & French Heart Jazz Band — Vibrato Grill Jazz
@@ -363,7 +600,7 @@ URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-29-adi-meyerson-dark-matter@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260729T193000
 DTEND;TZID=America/Los_Angeles:20260729T213000
 SUMMARY:Adi Meyerson & Dark Matter — Sam First
@@ -377,7 +614,7 @@ URL:https://www.samfirstbar.com/events/adi-meyerson-dark-matter-with-nico
 END:VEVENT
 BEGIN:VEVENT
 UID:sam-first-2026-07-30-reggie-quinerly@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260730T193000
 DTEND;TZID=America/Los_Angeles:20260730T213000
 SUMMARY:Reggie Quinerly — Sam First
@@ -391,7 +628,7 @@ URL:https://www.samfirstbar.com/events/quinerly-plays-the-connoisseur-ser
 END:VEVENT
 BEGIN:VEVENT
 UID:vibrato-grill-jazz-2026-07-31-louie-cruz-beltran@dansays.github.io
-DTSTAMP:20260628T002241Z
+DTSTAMP:20260628T023909Z
 DTSTART;TZID=America/Los_Angeles:20260731T190000
 DTEND;TZID=America/Los_Angeles:20260731T210000
 SUMMARY:Louie Cruz Beltran — Vibrato Grill Jazz
@@ -403,5 +640,73 @@ DESCRIPTION:Afro-Cuban / Latin jazz — vocals and percussion.\n\nTickets
 URL:https://resy.com/cities/los-angeles-ca/venues/herb-alperts-vibrato-gr
  ill-and-jazz/events/louie-cruz-beltran-vocals-percussion-all-that-jazz-20
  26-07-31
+END:VEVENT
+BEGIN:VEVENT
+UID:edwin-mills-2026-08-01-ed-romero-s-85th-birthday-bash@dansays.github.
+ io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260801T190000
+DTEND;TZID=America/Los_Angeles:20260801T210000
+SUMMARY:Ed Romero's 85th Birthday Bash — Edwin Mills
+LOCATION:22 Mills Pl\, Pasadena
+DESCRIPTION:Veteran LA jazz saxophonist's birthday celebration — straig
+ ht-ahead.\n\nTickets/info: https://edwinmills.com/events-live-music/
+URL:https://edwinmills.com/events-live-music/
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-08-02-betty-bryant@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260802T180000
+DTEND;TZID=America/Los_Angeles:20260802T200000
+SUMMARY:Betty Bryant — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Veteran jazz pianist-vocalist — swing and standards\, piano
+ -led.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-08-09-tawanda@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260809T180000
+DTEND;TZID=America/Los_Angeles:20260809T200000
+SUMMARY:Tawanda — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz and soul vocalist in the vocal-standards vein.\n\nTicket
+ s/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-08-16-val-monroe@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260816T180000
+DTEND;TZID=America/Los_Angeles:20260816T200000
+SUMMARY:Val Monroe — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz vocalist performing standards at the curated Sunday salo
+ n.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-08-23-niki-haris@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260823T180000
+DTEND;TZID=America/Los_Angeles:20260823T200000
+SUMMARY:Niki Haris — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Vocalist performing a jazz-standards set at the salon (best k
+ nown as a touring backing singer — style caveat).\n\nTickets/info: http
+ s://jazzsalon.org
+URL:https://jazzsalon.org
+END:VEVENT
+BEGIN:VEVENT
+UID:the-jazz-salon-2026-08-30-john-proulx@dansays.github.io
+DTSTAMP:20260628T023909Z
+DTSTART;TZID=America/Los_Angeles:20260830T180000
+DTEND;TZID=America/Los_Angeles:20260830T200000
+SUMMARY:John Proulx — The Jazz Salon
+LOCATION:Los Angeles Athletic Club\, 431 W 7th St\, Downtown Los Angeles
+DESCRIPTION:Jazz pianist-vocalist — Chet Baker-style crooning and stand
+ ards.\n\nTickets/info: https://jazzsalon.org
+URL:https://jazzsalon.org
 END:VEVENT
 END:VCALENDAR
