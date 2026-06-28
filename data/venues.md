@@ -73,3 +73,10 @@ the rubric can't score. Mine it for rooms that bill actual artists.
 - Notes: Legendary club, but heavily **jazz-fusion** oriented (a rubric Avoid signal) — most
   bookings are fusion / jazz-rock / funk-fusion and should be skipped. Keep only the occasional
   straight-ahead, acoustic, or standards/swing act. Expect most nights here to be dropped.
+
+## The Mint
+- Location: 6010 W Pico Blvd, Los Angeles
+- Calendar: https://themintla.com/events/
+- Notes: Historic multi-genre room — books mostly blues, rock, R&B, soul, and funk. ONLY include
+  jazz shows (skip the rest), like Blue Note (Hollywood). Expect most nights to be dropped; watch
+  for the occasional straight-ahead/standards/swing act.
