@@ -292,10 +292,11 @@ export function renderShowPage(
   .song { font-size: .78rem; color: var(--text); text-decoration: none; background: var(--panel-2);
           border: 1px solid var(--line); border-radius: 99px; padding: .28rem .7rem; }
   .song:hover { border-color: var(--amber); color: var(--amber); }
-  .links { margin-top: .75rem; font-size: .8rem; }
+  .links { margin-top: .75rem; font-size: .8rem; display: flex; flex-wrap: wrap;
+           align-items: center; gap: .25rem .45rem; }
   .links a { text-decoration: none; }
   .links a:hover { text-decoration: underline; }
-  .links .sep { color: var(--faint); margin: 0 .45rem; }
+  .links .sep { color: var(--faint); }
 
   .empty { color: var(--muted); margin-top: 2.5rem; }
   footer { margin-top: 3.5rem; font-size: .8rem; color: var(--faint); }
