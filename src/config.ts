@@ -16,7 +16,8 @@ export const PATHS = {
   seen: resolve(ROOT, "data/seen-events.json"),
   djShow: resolve(ROOT, "data/dj-show.json"), // source-of-truth manifest for /dj-show
   calendarIcs: resolve(ROOT, "docs/calendar.ics"), // published, subscribe-able show calendar
-  calendarHtml: resolve(ROOT, "docs/index.html"), // landing/subscribe page served by Pages
+  calendarHtml: resolve(ROOT, "docs/index.html"), // show page served by Pages
+  pageCache: resolve(ROOT, "data/.page-cache.json"), // cached artist art/song lookups (gitignored)
 } as const;
 
 /**

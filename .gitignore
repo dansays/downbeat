@@ -8,3 +8,4 @@ data/.roon-state/
 *.log
 .DS_Store
 .vscode/
+data/.page-cache.json

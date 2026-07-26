@@ -78,6 +78,14 @@ ledger:
 npm run downbeat -- ics:build   # writes docs/calendar.ics + docs/index.html (upcoming shows)
 ```
 
+`docs/index.html` is a full **show page**, not just a subscribe link: a month-grid calendar (tap a
+day to jump to its shows) plus a responsive card per show with album art, the why-you'd-like-it
+rationale, suggested songs linking to **Apple Music searches**, and tickets / map / artist links.
+Art comes from the free iTunes Search API and suggested songs from Last.fm at build time, cached in
+`data/.page-cache.json` (gitignored, two-week TTL) so rebuilds are fast; pass `--no-enrich` to skip
+the lookups entirely (plain cards, no network). Both lookups degrade gracefully — a miss just means
+a card without art or songs.
+
 `/scan-jazz` and `/downbeat` run this for you; committing and pushing `docs/` publishes it via
 **GitHub Pages**:
 

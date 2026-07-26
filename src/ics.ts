@@ -12,24 +12,11 @@ const DEFAULT_DURATION_MS = 2 * 60 * 60 * 1000;
 
 // Confidence badges call out only the standouts and the close calls; a plain "good" match shows
 // no emoji — being on the list is signal enough.
-function confidenceEmoji(c?: SeenEvent["confidence"]): string {
+export function confidenceEmoji(c?: SeenEvent["confidence"]): string {
   return c === "strong" ? "🎯" : c === "tentative" ? "🤔" : "";
 }
-function confidenceLabel(c?: SeenEvent["confidence"]): string {
+export function confidenceLabel(c?: SeenEvent["confidence"]): string {
   return c === "strong" ? "Standout" : c === "tentative" ? "Close call" : "";
-}
-
-/** Apple Maps search link for a venue address. */
-function appleMapsUrl(query: string): string {
-  return `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
-}
-/** Apple Music artist search link (no free exact-artist endpoint, so we link a search). */
-function appleMusicUrl(artist: string): string {
-  return `https://music.apple.com/us/search?term=${encodeURIComponent(artist)}`;
-}
-/** AllMusic artist search link. */
-function allMusicUrl(artist: string): string {
-  return `https://www.allmusic.com/search/artists/${encodeURIComponent(artist)}`;
 }
 
 export interface CalendarOptions {
@@ -77,7 +64,7 @@ function foldLine(line: string): string {
 const pad = (n: number, w = 2): string => String(n).padStart(w, "0");
 
 /** Parse "YYYY-MM-DD" into numeric parts (no destructuring, to satisfy noUncheckedIndexedAccess). */
-function parseYmd(date: string): { y: number; m: number; d: number } {
+export function parseYmd(date: string): { y: number; m: number; d: number } {
   const p = date.split("-");
   return { y: Number(p[0]), m: Number(p[1]), d: Number(p[2]) };
 }
@@ -218,17 +205,10 @@ export function buildIcs(events: SeenEvent[], opts: CalendarOptions): string {
   return lines.map(foldLine).join("\r\n") + "\r\n";
 }
 
-// --- HTML landing page -----------------------------------------------------
-
-const escapeHtml = (s: string): string =>
-  s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+// --- display helpers (shared with the show page) -----------------------------
 
 /** "19:30" → "7:30 PM"; passthrough if it doesn't parse. */
-function displayTime(time?: string): string {
+export function displayTime(time?: string): string {
   if (!time) return "All day";
   const { hh, mm } = parseHm(time);
   if (Number.isNaN(hh) || Number.isNaN(mm)) return time;
@@ -244,96 +224,14 @@ const MONTHS = [
 ];
 
 /** "2026-07-03" → "Friday, July 3". */
-function displayDate(date: string): string {
+export function displayDate(date: string): string {
   const { y, m, d } = parseYmd(date);
   const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return `${WEEKDAYS[wd]}, ${MONTHS[m - 1]} ${d}`;
 }
 
-/** Render the subscribe/landing page. Self-contained (inline CSS), safe to serve statically. */
-export function renderCalendarHtml(events: SeenEvent[], opts: CalendarOptions): string {
-  const icsHttps = `${opts.baseUrl}/calendar.ics`;
-  const icsWebcal = icsHttps.replace(/^https?:\/\//, "webcal://");
-  const updated = opts.now.toISOString().slice(0, 16).replace("T", " ") + " UTC";
-
-  const rows = events
-    .map((ev) => {
-      const location = opts.venueLocation?.(ev.venue) ?? ev.venue;
-      const emoji = confidenceEmoji(ev.confidence);
-      const badge = emoji
-        ? `<span class="conf" title="${escapeHtml(confidenceLabel(ev.confidence))}">${emoji}</span> `
-        : "";
-      // Links row: tickets (if known) + Apple Maps for the venue + artist search links.
-      const links = [
-        ev.ticketUrl ? `<a href="${escapeHtml(ev.ticketUrl)}">tickets / info</a>` : "",
-        `<a href="${escapeHtml(appleMapsUrl(location))}">map</a>`,
-        `<a href="${escapeHtml(appleMusicUrl(ev.artist))}">Apple Music</a>`,
-        `<a href="${escapeHtml(allMusicUrl(ev.artist))}">AllMusic</a>`,
-      ].filter(Boolean).join(" &middot; ");
-      const desc = ev.description
-        ? `<p class="why">${escapeHtml(ev.description)}</p>`
-        : "";
-      return `      <li>
-        <div class="when">${escapeHtml(displayDate(ev.date))} &middot; ${escapeHtml(displayTime(ev.time))}</div>
-        <div class="what">${badge}<strong>${escapeHtml(ev.artist)}</strong> &mdash; ${escapeHtml(ev.venue)}</div>
-        <div class="where">${escapeHtml(location)}</div>
-        <div class="links">${links}</div>
-        ${desc}
-      </li>`;
-    })
-    .join("\n");
-
-  const list = events.length
-    ? `    <ul class="shows">\n${rows}\n    </ul>`
-    : `    <p class="empty">No upcoming shows on the calendar right now — check back after the next scan.</p>`;
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(opts.calName)}</title>
-<style>
-  :root { color-scheme: dark; }
-  body { margin: 0; font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         background: #0d1117; color: #e6edf3; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
-  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
-  .sub { color: #9da7b3; margin: 0 0 1.75rem; }
-  .subscribe { display: inline-block; background: #2f81f7; color: #fff; text-decoration: none;
-               padding: .65rem 1.1rem; border-radius: 8px; font-weight: 600; }
-  .subscribe:hover { background: #4a90ff; }
-  .url { margin: .85rem 0 0; font-size: .85rem; color: #9da7b3; word-break: break-all; }
-  .url code { background: #161b22; padding: .15rem .4rem; border-radius: 5px; }
-  h2 { font-size: 1.05rem; margin: 2.5rem 0 .75rem; color: #9da7b3; font-weight: 600; }
-  ul.shows { list-style: none; margin: 0; padding: 0; }
-  ul.shows li { padding: 1rem 0; border-top: 1px solid #21262d; }
-  .when { font-size: .8rem; letter-spacing: .03em; text-transform: uppercase; color: #2f81f7; }
-  .what { margin: .15rem 0; }
-  .what a { color: #2f81f7; }
-  .where { font-size: .85rem; color: #9da7b3; }
-  .conf { font-style: normal; }
-  .links { margin: .3rem 0 0; font-size: .8rem; }
-  .links a { color: #2f81f7; text-decoration: none; }
-  .links a:hover { text-decoration: underline; }
-  .why { margin: .5rem 0 0; font-size: .9rem; color: #c9d1d9; }
-  .empty { color: #9da7b3; }
-  footer { margin-top: 3rem; font-size: .8rem; color: #6e7681; }
-  .legend { margin: .75rem 0 0; font-size: .8rem; color: #9da7b3; }
-</style>
-</head>
-<body>
-  <main class="wrap">
-    <h1>${escapeHtml(opts.calName)}</h1>
-    <p class="sub">Upcoming LA jazz shows matched to my taste. Subscribe and they appear in your calendar.</p>
-    <a class="subscribe" href="${escapeHtml(icsWebcal)}">Subscribe to the calendar</a>
-    <p class="url">Or paste this into your calendar app: <code>${escapeHtml(icsHttps)}</code></p>
-    <h2>On the calendar</h2>
-    <p class="legend">🎯 standout &middot; 🤔 close call &middot; everything else is a solid match</p>
-${list}
-    <footer>Generated by Downbeat &middot; updated ${escapeHtml(updated)}</footer>
-  </main>
-</body>
-</html>
-`;
+/** "2026-08" → "August 2026". */
+export function displayMonth(yyyyMm: string): string {
+  const p = yyyyMm.split("-");
+  return `${MONTHS[Number(p[1]) - 1]} ${p[0]}`;
 }

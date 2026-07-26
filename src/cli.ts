@@ -6,7 +6,9 @@ import { eventKey, isSeen, markSeen, loadSeen, readVenues, loadDjShow, saveDjSho
 import { topTracks } from "./lastfm.ts";
 import { withRoon, searchTrack, queueTrack, controlZone, listZones, searchLocalClip, type Zone } from "./roon.ts";
 import { synthesize, clipHash } from "./elevenlabs.ts";
-import { buildIcs, renderCalendarHtml, parseVenueLocations, venueLocator } from "./ics.ts";
+import { buildIcs, parseVenueLocations, venueLocator } from "./ics.ts";
+import { renderShowPage } from "./page.ts";
+import { enrichArtists, type ArtistEnrichment } from "./enrich.ts";
 import { join, dirname } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -152,7 +154,8 @@ program
   )
   .option("--all", "include past shows too (default: upcoming only)")
   .option("--name <name>", "calendar display name", "Downbeat — LA Jazz Picks")
-  .action(async (opts: { all?: boolean; name: string }) => {
+  .option("--no-enrich", "skip album-art / suggested-song lookups (plain cards, no network)")
+  .action(async (opts: { all?: boolean; name: string; enrich: boolean }) => {
     try {
       const events = await loadSeen();
       const now = today();
@@ -163,14 +166,20 @@ program
       const venueLocation = venueLocator(parseVenueLocations(await readVenues()));
       const calOpts = { calName: opts.name, baseUrl: CALENDAR_BASE_URL, now: new Date(), venueLocation };
 
+      const enrichment = opts.enrich
+        ? await enrichArtists(shows)
+        : new Map<string, ArtistEnrichment>();
+
       await mkdir(dirname(PATHS.calendarIcs), { recursive: true });
       await writeFile(PATHS.calendarIcs, buildIcs(shows, calOpts), "utf8");
-      await writeFile(PATHS.calendarHtml, renderCalendarHtml(shows, calOpts), "utf8");
+      await writeFile(PATHS.calendarHtml, renderShowPage(shows, enrichment, calOpts), "utf8");
 
       const timed = shows.filter((s) => s.time).length;
+      const withArt = shows.filter((s) => enrichment.get(s.artist)?.artworkUrl).length;
+      const withSongs = shows.filter((s) => enrichment.get(s.artist)?.songs?.length).length;
       console.log(
-        `Built calendar: ${shows.length} show(s) (${timed} timed, ${shows.length - timed} all-day) ` +
-          `→ docs/calendar.ics + docs/index.html`,
+        `Built calendar: ${shows.length} show(s) (${timed} timed, ${shows.length - timed} all-day; ` +
+          `${withArt} with art, ${withSongs} with songs) → docs/calendar.ics + docs/index.html`,
       );
       console.log(`Subscribe URL: ${CALENDAR_BASE_URL}/calendar.ics`);
       console.log(`Webcal:        ${CALENDAR_BASE_URL.replace(/^https?:\/\//, "webcal://")}/calendar.ics`);
