@@ -72,16 +72,18 @@ export function artistVariants(artist: string): string[] {
 // --- iTunes Search API -------------------------------------------------------
 
 interface ItunesResult {
+  wrapperType?: string; // "artist" | "collection" | "track"
+  artistId?: number;
   artistName?: string;
+  artistLinkUrl?: string; // artist page (on wrapperType "artist" results)
+  artistViewUrl?: string; // artist page (on album/track results)
   artworkUrl100?: string;
-  artistViewUrl?: string;
+  primaryGenreName?: string;
 }
 
-/** One throttled iTunes search call; retries once on rate-limit, returns [] on any failure. */
-async function itunesSearch(term: string, entity: "album" | "song"): Promise<ItunesResult[]> {
-  const url =
-    `https://itunes.apple.com/search?media=music&entity=${entity}&limit=8` +
-    `&term=${encodeURIComponent(term)}`;
+/** One throttled iTunes API call; retries once on rate-limit, returns [] on any failure. */
+async function itunesCall(pathAndQuery: string): Promise<ItunesResult[]> {
+  const url = `https://itunes.apple.com/${pathAndQuery}`;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(url);
@@ -91,6 +93,7 @@ async function itunesSearch(term: string, entity: "album" | "song"): Promise<Itu
       }
       if (!res.ok) return [];
       const data = (await res.json()) as { results?: ItunesResult[] };
+      await sleep(ITUNES_DELAY_MS);
       return data.results ?? [];
     } catch {
       return []; // offline or DNS failure — degrade to a plain card
@@ -99,33 +102,84 @@ async function itunesSearch(term: string, entity: "album" | "song"): Promise<Itu
   return [];
 }
 
-/** Does an iTunes result's artistName plausibly refer to the name we searched? */
-function artistMatches(result: ItunesResult, variant: string): boolean {
-  const na = norm(result.artistName ?? "");
+/**
+ * Genres we trust when a *stripped* name variant matches. The full billed name is specific enough
+ * to trust any genre, but short variants ("Sylvia") collide with unrelated famous artists — for
+ * those, only jazz-adjacent catalog counts as confirmation it's the right person.
+ */
+const JAZZY_GENRE =
+  /jazz|vocal|big band|bossa|swing|standards|easy listening|blues|latin|instrumental|holiday|christmas|world|soundtrack|stage|cabaret/i;
+const genreOk = (g: string | undefined, strict: boolean): boolean =>
+  !strict || !g || JAZZY_GENRE.test(g);
+
+/** Strict name equality for artist credits (leading "The" optional, diacritics/punct ignored). */
+function sameArtist(a: string | undefined, variant: string): boolean {
+  const na = norm(a ?? "");
   const nv = norm(variant);
   if (!na || !nv) return false;
-  // Containment either way, but never let a very short name match by containment alone.
-  return na === nv || na.includes(nv) || (na.length >= 4 && nv.includes(na));
+  return na === nv || na === `the ${nv}` || nv === `the ${na}`;
 }
 
-/** Find art + an artist page for one of the name variants; undefined fields when nothing matches. */
+/**
+ * Find art + an artist page for one of the name variants; undefined fields when nothing matches.
+ *
+ * Pass 1 resolves the artist by exact name (entity=musicArtist), then takes art only from that
+ * artist's own albums — a side credit on someone else's record ("… feat. Roy McCurdy") can no
+ * longer donate the wrong face and profile link. Pass 2 is a fallback album search that accepts
+ * only a lead credit. Stripped variants additionally require jazz-adjacent genre (see JAZZY_GENRE).
+ */
 async function itunesLookup(
   variants: string[],
 ): Promise<{ artworkUrl?: string; appleMusicArtistUrl?: string; searchArtist?: string }> {
-  // Cap the calls an unmatchable name can burn: 4 variants, songs only for the first two.
+  // Pass 1: exact artist resolution. Cap at 4 variants so unmatchable names stay cheap.
   for (const [i, variant] of variants.slice(0, 4).entries()) {
-    for (const entity of i < 2 ? (["album", "song"] as const) : (["album"] as const)) {
-      const results = await itunesSearch(variant, entity);
-      await sleep(ITUNES_DELAY_MS);
-      const hit = results.find((r) => artistMatches(r, variant) && r.artworkUrl100);
-      if (hit?.artworkUrl100) {
-        return {
-          artworkUrl: hit.artworkUrl100.replace(/100x100bb/, "400x400bb"),
-          appleMusicArtistUrl: hit.artistViewUrl,
-          searchArtist: variant,
-        };
-      }
-      if (results.length && entity === "album") continue; // plenty of albums, none by them → try songs
+    const strict = i > 0; // stripped variants are ambiguous → require jazz-adjacent genre
+    const artists = await itunesCall(
+      `search?media=music&entity=musicArtist&limit=10&term=${encodeURIComponent(variant)}`,
+    );
+    const artist = artists.find(
+      (r) => sameArtist(r.artistName, variant) && genreOk(r.primaryGenreName, strict),
+    );
+    if (!artist?.artistId) continue;
+    const looked = await itunesCall(`lookup?id=${artist.artistId}&entity=album&limit=8`);
+    // The lookup returns every collection credited to the artistId, including other leaders'
+    // albums they played on — only accept albums where THEY are the lead credit, so a sideman's
+    // card never wears someone else's cover.
+    const leadName = artist.artistName ?? variant;
+    const album = looked.find(
+      (r) =>
+        r.wrapperType === "collection" &&
+        r.artworkUrl100 &&
+        genreOk(r.primaryGenreName, strict) &&
+        (sameArtist(r.artistName, leadName) ||
+          norm(r.artistName ?? "").startsWith(`${norm(leadName)} `)),
+    );
+    return {
+      artworkUrl: album?.artworkUrl100?.replace(/100x100bb/, "400x400bb"),
+      appleMusicArtistUrl: artist.artistLinkUrl,
+      searchArtist: variant,
+    };
+  }
+
+  // Pass 2: no artist record — fall back to albums where the *lead credit* is the name itself.
+  for (const [i, variant] of variants.slice(0, 2).entries()) {
+    const strict = i > 0;
+    const results = await itunesCall(
+      `search?media=music&entity=album&limit=8&term=${encodeURIComponent(variant)}`,
+    );
+    const hit = results.find(
+      (r) =>
+        r.artworkUrl100 &&
+        genreOk(r.primaryGenreName, strict) &&
+        (sameArtist(r.artistName, variant) ||
+          norm(r.artistName ?? "").startsWith(`${norm(variant)} `)),
+    );
+    if (hit?.artworkUrl100) {
+      return {
+        artworkUrl: hit.artworkUrl100.replace(/100x100bb/, "400x400bb"),
+        appleMusicArtistUrl: hit.artistViewUrl,
+        searchArtist: variant,
+      };
     }
   }
   return {};
